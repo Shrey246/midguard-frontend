@@ -1,7 +1,7 @@
 
 
 const BASE_URL = "https://midguard-backend-production.up.railway.app/";
-const Auth_URL = BASE_URL + "Auth";
+const Auth_URL = "https://midguard-backend-production.up.railway.app/Auth";
 export const api = {
 
   //LOGIN API
