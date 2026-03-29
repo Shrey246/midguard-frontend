@@ -1,7 +1,7 @@
 
 
-const BASE_URL = "http://localhost:5000/";
-const Auth_URL = "http://localhost:5000/Auth";
+const BASE_URL = "https://midguard-backend-production.up.railway.app/";
+const Auth_URL = BASE_URL + "Auth";
 export const api = {
 
   //LOGIN API
