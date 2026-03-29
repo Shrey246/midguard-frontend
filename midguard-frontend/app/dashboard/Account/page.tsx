@@ -10,6 +10,8 @@ import {
   LogOut
 } from "lucide-react";
 
+const BASE_URL = "https://midguard-backend-production.up.railway.app/";
+
 export default function AccountPage() {
   const [user, setUser] = useState<any>(null);
   const [showPicMenu, setShowPicMenu] = useState(false);
@@ -29,7 +31,7 @@ export default function AccountPage() {
 
   const fetchUser = async (token: string) => {
     try {
-      const res = await fetch("http://localhost:5000/auth/me", {
+      const res = await fetch(`${BASE_URL}auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -70,7 +72,7 @@ export default function AccountPage() {
 
   const updateField = async (field: string, value: any) => {
     try {
-      const res = await fetch("http://localhost:5000/auth/update", {
+      const res = await fetch(`${BASE_URL}auth/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +99,7 @@ export default function AccountPage() {
       formData.append("context_id", user.publicId);
       formData.append("purpose", "profile_picture");
 
-      const res = await fetch("http://localhost:5000/assets/upload", {
+      const res = await fetch(`${BASE_URL}assets/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -125,7 +127,7 @@ export default function AccountPage() {
     try {
       const token = localStorage.getItem("token");
 
-      await fetch("http://localhost:5000/auth/logout", {
+      await fetch(`${BASE_URL}auth/logout`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
