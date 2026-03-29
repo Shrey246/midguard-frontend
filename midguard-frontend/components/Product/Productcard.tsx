@@ -5,7 +5,7 @@ import ProductImage from "./ProductImage";
 import ActionButton from "./ActionButton";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-
+const BASE_URL = "https://midguard-backend-production.up.railway.app/";
 export default function ProductCard({ room }: any) {
   const router = useRouter();
 
@@ -43,7 +43,7 @@ export default function ProductCard({ room }: any) {
           if (raw) {
             const img = raw.startsWith("http")
               ? raw
-              : `http://localhost:5000${raw}`;
+              : `${BASE_URL}${raw}`;
 
             setImage(img);
           } else {
