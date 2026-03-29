@@ -238,7 +238,58 @@ export const api = {
     return res.json();
   },
 
-  // ADDRESS APIs remain unchanged (already using BASE_URL)
+// ================= ADDRESS APIs =================
+
+// CREATE ADDRESS
+createAddress: async (data: any) => {
+  const res = await fetch(`${BASE_URL}address`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+},
+
+// GET ALL ADDRESSES
+getAddresses: async () => {
+  const res = await fetch(`${BASE_URL}address`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  return res.json();
+},
+
+// DELETE ADDRESS
+deleteAddress: async (address_uid: string) => {
+  const res = await fetch(`${BASE_URL}address/${address_uid}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  return res.json();
+},
+
+// SET DEFAULT ADDRESS
+setDefaultAddress: async (address_uid: string) => {
+  const res = await fetch(`${BASE_URL}address/default`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({ address_uid }),
+  });
+
+  return res.json();
+},
 
   // ESCROW APIs
   getEscrow: async (sessionId: string) => {
