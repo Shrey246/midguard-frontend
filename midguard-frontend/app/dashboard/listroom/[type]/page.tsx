@@ -8,7 +8,7 @@ import ProductCard from "@/components/Product/Productcard";
 export default function RoomsByTypePage() {
   const params = useParams();
   const type = params?.type as string;
-
+  const BASE_URL = "https://midguard-backend-production.up.railway.app/";
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +18,7 @@ export default function RoomsByTypePage() {
     const fetchRooms = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/rooms?type=${type}`,
+         `${BASE_URL}rooms?type=${type}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
