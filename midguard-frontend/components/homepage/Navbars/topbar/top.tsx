@@ -9,12 +9,11 @@ import NotificationBell from "@/components/dashboard/common/Notificationbell";
 export default function Topbar({ setOpen }: any) {
   const pathname = usePathname();
   const router = useRouter();
-  const [address, setAddress] = useState<any>(null); 
+  const [address, setAddress] = useState<any>(null);
   const [walletOpen, setWalletOpen] = useState(false);
   const [wallet, setWallet] = useState<any>(null);
   const [query, setQuery] = useState("");
 
-  // 🔥 Load wallet
   const loadWallet = async () => {
     try {
       const data = await api.getWallet();
@@ -24,34 +23,31 @@ export default function Topbar({ setOpen }: any) {
     }
   };
 
-      const loadAddress = async () => {
-      try {
-        const res = await api.getAddresses();
-        const list = res.addresses || [];
+  const loadAddress = async () => {
+    try {
+      const res = await api.getAddresses();
+      const list = res.addresses || [];
+      const defaultAddr = list.find((a: any) => a.is_default) || list[0];
+      setAddress(defaultAddr);
+    } catch (err) {
+      console.error("Failed to load address", err);
+    }
+  };
 
-        const defaultAddr = list.find((a: any) => a.is_default) || list[0];
-        setAddress(defaultAddr);
-      } catch (err) {
-        console.error("Failed to load address", err);
-      }
-    };
+  useEffect(() => {
+    loadWallet();
+    loadAddress();
 
-  // 🔥 Auto load + smart refresh
-      useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") {
         loadWallet();
         loadAddress();
+      }
+    }, 5000);
 
-        const interval = setInterval(() => {
-          if (document.visibilityState === "visible") {
-            loadWallet();
-            loadAddress();
-          }
-        }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
-        return () => clearInterval(interval);
-      }, []);
-
-  // 🔥 Dynamic page title
   const getTitle = () => {
     if (pathname.includes("/dashboard")) return "Discover";
     if (pathname.includes("/orders")) return "My Orders";
@@ -61,7 +57,6 @@ export default function Topbar({ setOpen }: any) {
     return "MidGuard";
   };
 
-  // 🔍 Search handler
   const handleSearch = () => {
     if (!query) return;
 
@@ -77,54 +72,91 @@ export default function Topbar({ setOpen }: any) {
   };
 
   return (
-    <div className="w-full h-[70px] flex items-center justify-between px-6 border-b border-white/10 bg-black/60 backdrop-blur-xl relative z-50">
-
+    <div
+      className="
+        w-full h-[70px]
+        flex items-center justify-between
+        px-4 md:px-6
+        border-b border-[color:var(--foreground)/0.12]
+        bg-[var(--background)]
+        text-[var(--foreground)]
+        backdrop-blur-xl
+        relative z-50
+        transition-colors duration-300
+      "
+    >
       {/* LEFT */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-fit">
         <button
           onClick={() => setOpen(true)}
-          className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400 transition"
+          className="
+            p-2 rounded-xl
+            bg-[color:var(--foreground)/0.05]
+            border border-[color:var(--foreground)/0.12]
+            hover:border-cyan-400
+            transition
+          "
         >
           <Menu size={18} />
         </button>
 
-        <h1 className="text-lg font-semibold text-white">
+        <h1 className="text-base md:text-lg font-semibold">
           {getTitle()}
         </h1>
       </div>
 
-      {/* CENTER */}
-      <div className="w-[40%] relative">
+      {/* CENTER (SEARCH) */}
+      <div className="hidden md:block w-full max-w-md mx-4 relative">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           placeholder="Search..."
-          className="w-full pl-10 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-cyan-400"
+          className="
+            w-full pl-10 pr-4 py-2 rounded-xl
+            bg-[color:var(--foreground)/0.05]
+            border border-[color:var(--foreground)/0.12]
+            text-sm text-[var(--foreground)]
+            focus:outline-none focus:border-cyan-400
+          "
         />
-        <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+        <Search
+          className="absolute left-3 top-2.5 text-[color:var(--foreground)/0.5]"
+          size={16}
+        />
       </div>
 
       {/* RIGHT */}
-      <div className="flex items-center gap-4 relative">
-        {/* 🔔 NOTIFICATIONS */}
-          <NotificationBell />
-      {/* ADDRESS */}
-      <div
-        onClick={() => router.push("/dashboard/address")}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:border-cyan-400 transition"
-      >
-        📍
-        <span className="text-sm">
-          {address?.postal_code || "Add Address"}
-        </span>
-      </div>
+      <div className="flex items-center gap-3 md:gap-4 relative">
+
+        <NotificationBell />
+
+        {/* ADDRESS (hide on small) */}
+        <div
+          onClick={() => router.push("/dashboard/address")}
+          className="
+            hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl
+            bg-[color:var(--foreground)/0.05]
+            border border-[color:var(--foreground)/0.12]
+            cursor-pointer hover:border-cyan-400 transition
+          "
+        >
+          📍
+          <span className="text-sm">
+            {address?.postal_code || "Address"}
+          </span>
+        </div>
 
         {/* WALLET */}
         <div className="relative">
           <div
             onClick={() => setWalletOpen((prev) => !prev)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:border-cyan-400 transition"
+            className="
+              flex items-center gap-2 px-3 py-2 rounded-xl
+              bg-[color:var(--foreground)/0.05]
+              border border-[color:var(--foreground)/0.12]
+              cursor-pointer hover:border-cyan-400 transition
+            "
           >
             <Wallet size={16} />
             <span className="text-sm">
@@ -133,34 +165,44 @@ export default function Topbar({ setOpen }: any) {
           </div>
 
           {walletOpen && (
-            <div className="absolute right-0 mt-2 w-60 z-[100] p-4 rounded-xl bg-black/80 border border-white/10 backdrop-blur-xl shadow-xl">
-
-              {/* HEADER */}
+            <div
+              className="
+                absolute right-0 mt-2 w-60 z-[100] p-4 rounded-xl
+                bg-[var(--background)]
+                border border-[color:var(--foreground)/0.12]
+                shadow-xl
+              "
+            >
               <div className="flex items-center gap-2 mb-3">
                 <Wallet size={16} />
                 <span className="text-sm font-semibold">Wallet</span>
               </div>
 
-              {/* AVAILABLE */}
-              <p className="text-xs text-gray-400">Available</p>
+              <p className="text-xs text-[color:var(--foreground)/0.6]">
+                Available
+              </p>
               <p className="text-lg font-bold text-green-400">
                 ₹{wallet?.available_balance ?? 0}
               </p>
 
-              {/* LOCKED */}
-              <p className="text-xs text-gray-400 mt-2">Locked</p>
+              <p className="text-xs text-[color:var(--foreground)/0.6] mt-2">
+                Locked
+              </p>
               <p className="text-lg font-bold text-yellow-400">
                 ₹{wallet?.locked_balance ?? 0}
               </p>
 
-              {/* BUTTON */}
               <button
                 onClick={() => router.push("/dashboard/wallet")}
-                className="mt-4 w-full py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition"
+                className="
+                  mt-4 w-full py-2 rounded-lg
+                  bg-gradient-to-r from-cyan-400 to-blue-500
+                  text-black font-semibold
+                  hover:scale-105 transition
+                "
               >
                 View Ledger →
               </button>
-
             </div>
           )}
         </div>
@@ -168,10 +210,14 @@ export default function Topbar({ setOpen }: any) {
         {/* ACCOUNT */}
         <User
           size={20}
-          className="cursor-pointer text-gray-300 hover:text-white"
+          className="
+            cursor-pointer
+            text-[color:var(--foreground)/0.7]
+            hover:text-[var(--foreground)]
+            transition
+          "
           onClick={() => router.push("/dashboard/Account")}
         />
-
       </div>
     </div>
   );
