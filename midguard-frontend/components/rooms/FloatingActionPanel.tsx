@@ -16,25 +16,41 @@ export default function FloatingActionPanel({
   actions,
 }: Props) {
   return (
-    <div className="sticky bottom-4 z-50 px-2 sm:px-0">
+    <div className="sticky bottom-4 z-50 px-2 sm:px-4">
 
       <div className="
-        flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4
-        bg-gray-100 dark:bg-white/5 backdrop-blur-xl
-        p-3 sm:p-4 rounded-2xl shadow-xl
+        flex flex-col sm:flex-row
+        sm:items-center sm:justify-between
+        gap-3 sm:gap-4
+        bg-[color:var(--foreground)/0.05]
+        border border-[color:var(--foreground)/0.12]
+        backdrop-blur-xl
+        p-3 sm:p-4
+        rounded-2xl
+        shadow-lg
         transition-all duration-300
       ">
 
         {/* LEFT: ROOM TYPE */}
-        <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+        <div className="
+          text-xs sm:text-sm
+          text-[color:var(--foreground)/0.6]
+        ">
           Room:{" "}
-          <span className="text-black dark:text-white capitalize font-medium">
+          <span className="
+            text-[color:var(--foreground)]
+            capitalize font-medium
+          ">
             {roomType}
           </span>
         </div>
 
         {/* RIGHT: ACTIONS */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+        <div className="
+          flex flex-col sm:flex-row
+          gap-2 sm:gap-3
+          w-full sm:w-auto
+        ">
 
           {actions.map((action, i) => (
             <button
@@ -42,11 +58,14 @@ export default function FloatingActionPanel({
               onClick={action.onClick}
               className={`
                 w-full sm:w-auto
-                px-4 sm:px-5 py-2 rounded-xl font-medium transition text-sm sm:text-base
+                px-4 sm:px-5 py-2.5
+                rounded-xl font-medium
+                text-sm sm:text-base
+                transition-all duration-200
                 ${
                   action.variant === "primary"
-                    ? "bg-orange-500 hover:bg-orange-600 text-white"
-                    : "bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20 text-black dark:text-white"
+                    ? "bg-orange-500 hover:bg-orange-600 text-white shadow-sm"
+                    : "bg-[color:var(--foreground)/0.08] hover:bg-[color:var(--foreground)/0.15] text-[color:var(--foreground)]"
                 }
               `}
             >
@@ -55,7 +74,6 @@ export default function FloatingActionPanel({
           ))}
 
         </div>
-
       </div>
     </div>
   );
