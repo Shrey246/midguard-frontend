@@ -36,18 +36,35 @@ export function ProductsGrid() {
   }
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold mb-4">
-        Best Selling Products of the Week
-      </h2>
+    <section className="mt-6">
+      {/* HEADER */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-[var(--foreground)]">
+          Best Selling Products of the Week
+        </h2>
+      </div>
 
-      <div className="grid grid-cols-4 gap-6">
+      {/* GRID */}
+      <div
+        className="
+          grid gap-6
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-3
+          xl:grid-cols-4
+        "
+      >
         {filledProducts.map((p, index) => (
           <ProductCard key={index} product={p} />
         ))}
       </div>
 
-      <Pagination page={page} setPage={setPage} totalPages={TOTAL_PAGES} />
-    </div>
+      {/* PAGINATION */}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalPages={TOTAL_PAGES}
+      />
+    </section>
   );
 }
