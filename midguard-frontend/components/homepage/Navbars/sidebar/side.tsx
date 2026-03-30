@@ -154,19 +154,23 @@ export default function Sidebar({ open, setOpen }: any) {
             onClick={() => {
               const newDark = !dark;
               setDark(newDark);
-
+          
               document.documentElement.classList.toggle("dark", newDark);
               localStorage.setItem("theme", newDark ? "dark" : "light");
             }}
             className={`
               w-10 h-5 flex items-center rounded-full p-1 transition
-              ${dark ? "bg-cyan-500" : "bg-[color:var(--foreground)/0.3]"}
+              ${dark 
+                ? "bg-cyan-500" 
+                : "bg-[color:var(--foreground)/0.2]"
+              }
             `}
           >
             <div
               className={`
-                w-4 h-4 bg-white rounded-full shadow-md transform transition
-                ${dark ? "translate-x-5" : "translate-x-0"}
+                w-4 h-4 rounded-full shadow-md transform transition
+                ${dark ? "translate-x-5 bg-white" : "translate-x-0 bg-[var(--background)]"}
+                border border-[color:var(--foreground)/0.15]
               `}
             />
           </button>
