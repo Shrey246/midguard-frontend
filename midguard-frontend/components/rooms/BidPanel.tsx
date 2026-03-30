@@ -68,18 +68,22 @@ export default function BidPanel({
 
   const handleClick = () => {
     if (!isValid) return;
-
     onPlaceBid(Number(input));
     setInput("");
   };
 
   return (
     <div className="
-      bg-gray-100 dark:bg-white/5 backdrop-blur-xl
-      p-4 sm:p-6 rounded-2xl shadow-lg space-y-5 sm:space-y-6
+      bg-[color:var(--foreground)/0.05]
+      border border-[color:var(--foreground)/0.12]
+      backdrop-blur-xl
+      p-4 sm:p-5 md:p-6
+      rounded-2xl
+      shadow-sm
+      space-y-5 sm:space-y-6
       transition-all duration-300
     ">
-      
+
       {/* TOP BIDDERS */}
       <div>
         <h3 className="font-semibold mb-3 text-sm sm:text-base">
@@ -91,21 +95,25 @@ export default function BidPanel({
             <div
               key={i}
               className={`
-                flex justify-between p-2 rounded-lg text-sm sm:text-base
-                ${b.user === currentUser
-                  ? "bg-orange-500/20"
-                  : "bg-gray-200 dark:bg-white/10"}
+                flex justify-between items-center
+                p-2.5 rounded-lg text-sm sm:text-base
+                transition
+                ${
+                  b.user === currentUser
+                    ? "bg-orange-500/15 border border-orange-500/40"
+                    : "bg-[color:var(--foreground)/0.06]"
+                }
               `}
             >
               <span className="truncate">
                 #{i + 1} {b.user}
               </span>
-              <span>₹{b.amount}</span>
+              <span className="font-medium">₹{b.amount}</span>
             </div>
           ))}
 
           {!topBidders.length && (
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
+            <p className="text-[color:var(--foreground)/0.5] text-sm">
               No bids yet
             </p>
           )}
@@ -114,9 +122,10 @@ export default function BidPanel({
 
       {/* TIMER */}
       <div className="text-center">
-        <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
+        <p className="text-[color:var(--foreground)/0.6] text-xs sm:text-sm">
           Time Remaining
         </p>
+
         <div
           className={`
             text-xl sm:text-2xl font-bold
@@ -139,14 +148,18 @@ export default function BidPanel({
           disabled={isEnded}
           className="
             w-full p-2.5 sm:p-3 rounded-xl
-            bg-gray-200 dark:bg-white/10
-            text-black dark:text-white
+            bg-[color:var(--foreground)/0.08]
+            border border-[color:var(--foreground)/0.15]
+            text-[color:var(--foreground)]
+            placeholder:text-[color:var(--foreground)/0.5]
             outline-none
+            focus:ring-2 focus:ring-orange-500
             disabled:opacity-50
+            transition
           "
         />
 
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-[color:var(--foreground)/0.5]">
           Minimum bid: ₹{minBid}
         </p>
 
@@ -154,10 +167,12 @@ export default function BidPanel({
           onClick={handleClick}
           disabled={!isValid}
           className={`
-            w-full py-2.5 sm:py-3 rounded-xl font-semibold transition text-white
-            ${isValid
-              ? "bg-orange-500 hover:bg-orange-600"
-              : "bg-gray-500 cursor-not-allowed"}
+            w-full py-2.5 sm:py-3 rounded-xl font-semibold transition
+            ${
+              isValid
+                ? "bg-orange-500 hover:bg-orange-600 text-white"
+                : "bg-[color:var(--foreground)/0.2] text-[color:var(--foreground)/0.5] cursor-not-allowed"
+            }
           `}
         >
           {isEnded || timeLeft === "Ended"
