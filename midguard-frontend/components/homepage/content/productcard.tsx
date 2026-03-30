@@ -2,11 +2,28 @@ export function ProductCard({ product }: any) {
   // EMPTY CARD (AD SLOT)
   if (!product) {
     return (
-      <div className="p-4 border-2 border-dashed border-gray-300 dark:border-white/10 rounded-xl flex flex-col items-center justify-center text-center">
-        <div className="h-32 w-full flex items-center justify-center text-gray-400 text-xs mb-3">
+      <div
+        className="
+          p-4 rounded-xl
+          border-2 border-dashed
+          border-[color:var(--foreground)/0.15]
+          bg-[color:var(--foreground)/0.03]
+
+          flex flex-col items-center justify-center text-center
+          transition hover:border-cyan-400
+        "
+      >
+        <div
+          className="
+            h-32 w-full flex items-center justify-center
+            text-xs mb-3
+            text-[color:var(--foreground)/0.5]
+          "
+        >
           Your Product Here
         </div>
-        <p className="text-xs text-gray-400">
+
+        <p className="text-xs text-[color:var(--foreground)/0.5]">
           Start selling on MidGuard
         </p>
       </div>
@@ -15,20 +32,53 @@ export function ProductCard({ product }: any) {
 
   // REAL PRODUCT
   return (
-    <div className="p-4 border border-gray-300 dark:border-white/10 rounded-xl bg-gray-100 dark:bg-white/5">
-      <div className="h-32 bg-gray-200 dark:bg-black/40 rounded-md mb-3 flex items-center justify-center text-xs text-gray-400">
+    <div
+      className="
+        p-4 rounded-xl
+        border border-[color:var(--foreground)/0.12]
+        bg-[color:var(--foreground)/0.04]
+
+        hover:border-cyan-400
+        hover:shadow-md
+        transition
+      "
+    >
+      {/* IMAGE */}
+      <div
+        className="
+          h-32 rounded-md mb-3
+          flex items-center justify-center text-xs
+
+          bg-[color:var(--foreground)/0.08]
+          text-[color:var(--foreground)/0.5]
+        "
+      >
         Image
       </div>
 
-      <h4 className="text-sm font-semibold">
+      {/* TITLE */}
+      <h4 className="text-sm font-semibold text-[var(--foreground)] line-clamp-1">
         {product.title || product.name}
       </h4>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+      {/* PRICE */}
+      <p className="text-sm mt-1 text-[color:var(--foreground)/0.7]">
         ₹{product.price || product.base_price}
       </p>
 
-      <button className="mt-2 px-3 py-1 text-sm border rounded-lg">
+      {/* CTA */}
+      <button
+        className="
+          mt-3 w-full py-1.5 rounded-lg text-sm font-medium
+
+          border border-[color:var(--foreground)/0.15]
+          bg-[color:var(--foreground)/0.05]
+          text-[var(--foreground)]
+
+          hover:bg-cyan-500 hover:text-black hover:border-cyan-500
+          transition
+        "
+      >
         Buy Now
       </button>
     </div>
