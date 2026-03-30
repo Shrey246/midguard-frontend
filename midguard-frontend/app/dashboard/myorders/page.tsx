@@ -77,7 +77,7 @@ export default function OrdersPage() {
 
         {/* CTA */}
         <button
-          onClick={() => router.push("/dashboard/rooms")}
+          onClick={() => router.push("/dashboard/listroom/public")}
           className="
             mt-6 px-5 py-2 rounded-lg
             bg-cyan-500/90 hover:bg-cyan-500
