@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation"; // ✅ added router
+import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import MessagePanel from "@/components/rooms/MessagePanel";
 import { adaptMessage } from "@/lib/adapters/messageadapter";
 import ImageView from "@/components/rooms/ImageView";
+
+const BASE_URL = "https://midguard-backend-production.up.railway.app/";
 
 // ================= DELIVERY STEPS =================
 const DELIVERY_STEPS = [
@@ -15,13 +17,11 @@ const DELIVERY_STEPS = [
   "released",
 ];
 
-// ================= COMPONENT =================
 export default function EscrowPage() {
   const params = useParams();
-  const router = useRouter(); // ✅ added
+  const router = useRouter();
   const routeSessionId = params.sessionId as string;
 
-  // ================= STATE =================
   const [escrow, setEscrow] = useState<any>(null);
   const [order, setOrder] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
@@ -29,14 +29,11 @@ export default function EscrowPage() {
 
   const sessionUid = escrow?.session_id;
 
-  // ================= 🔒 AUTH GUARD =================
+  // ================= 🔒 AUTH =================
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-  }, []);
+    if (!token) router.push("/login");
+  }, [router]);
 
   // ================= FETCH ESCROW =================
   const fetchEscrow = async () => {
@@ -55,8 +52,6 @@ export default function EscrowPage() {
 
     } catch (err) {
       console.error("❌ Escrow fetch error:", err);
-
-      // 🔒 fallback protection
       localStorage.removeItem("token");
       router.push("/login");
     }
@@ -70,15 +65,7 @@ export default function EscrowPage() {
       const raw = await api.getMessages(sessionId);
 
       const adapted = raw
-        .map((m: any) => {
-          const adaptedMsg = adaptMessage(m);
-
-          if (!adaptedMsg) {
-            console.error("❌ Dropped invalid message:", m);
-          }
-
-          return adaptedMsg;
-        })
+        .map((m: any) => adaptMessage(m))
         .filter(Boolean);
 
       setMessages(adapted);
@@ -102,8 +89,20 @@ export default function EscrowPage() {
           [];
 
         const urls = assets
-          .filter((a: any) => a.purpose === "listing_image")
-          .map((a: any) => a.file_url);
+          .map((a: any) => {
+            const raw =
+              a?.url ||
+              a?.file_url ||
+              a?.path ||
+              a?.asset_url;
+
+            if (!raw) return null;
+
+            return raw.startsWith("http")
+              ? raw
+              : `${BASE_URL}${raw}`;
+          })
+          .filter(Boolean);
 
         setImages(urls);
 
@@ -115,36 +114,26 @@ export default function EscrowPage() {
     fetchImages();
   }, [order?.room_uid]);
 
-  // ================= SEND MESSAGE =================
+  // ================= SEND =================
   const sendMessage = async (msg: string, file?: File) => {
     try {
-      if (file) {
-        console.log("File upload not implemented yet");
-        return;
-      }
+      if (file) return;
 
-      if (!sessionUid) {
-        console.error("❌ No sessionUid available");
-        return;
-      }
+      if (!sessionUid) return;
 
       const rawMessage = await api.sendMessage(sessionUid, msg);
-
       const newMsg = adaptMessage(rawMessage);
 
-      if (!newMsg) {
-        console.error("❌ Invalid sent message:", rawMessage);
-        return;
-      }
+      if (!newMsg) return;
 
       setMessages((prev) => [...prev, newMsg]);
 
-    } catch (err: any) {
+    } catch (err) {
       console.error("❌ Send failed:", err);
     }
   };
 
-  // ================= DELIVERY ACTIONS =================
+  // ================= ACTIONS =================
   const markShipped = async () => {
     try {
       if (!sessionUid) return;
@@ -155,7 +144,6 @@ export default function EscrowPage() {
       });
 
       fetchEscrow();
-
     } catch (err) {
       console.error("❌ Ship failed:", err);
     }
@@ -167,7 +155,6 @@ export default function EscrowPage() {
 
       await api.confirmDelivery(sessionUid);
       fetchEscrow();
-
     } catch (err) {
       console.error("❌ Confirm delivery failed:", err);
     }
@@ -186,11 +173,10 @@ export default function EscrowPage() {
 
   useEffect(() => {
     if (!sessionUid) return;
-
     fetchMessages(sessionUid);
   }, [sessionUid]);
 
-  // ================= DELIVERY UI =================
+  // ================= DELIVERY =================
   const getStepIndex = (status: string) => {
     return DELIVERY_STEPS.indexOf(status);
   };
@@ -212,20 +198,39 @@ export default function EscrowPage() {
   return (
     <div className="
       p-4 sm:p-6 space-y-6 min-h-screen
-      bg-white text-black
-      dark:bg-black dark:text-white
-      transition-all duration-300
+      bg-[color:var(--background)]
+      text-[color:var(--foreground)]
+      transition-all
     ">
 
-      <div className="text-lg sm:text-xl font-semibold border-b pb-3 border-gray-300 dark:border-white/10">
+      {/* HEADER */}
+      <div className="
+        text-lg sm:text-xl font-semibold
+        border-b pb-3
+        border-[color:var(--foreground)/0.1]
+      ">
         Escrow Session
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      {/* GRID */}
+      <div className="
+        grid grid-cols-1
+        md:grid-cols-2
+        xl:grid-cols-3
+        gap-4 sm:gap-6
+      ">
 
+        {/* IMAGES */}
         <ImageView images={images} />
 
-        <div className="border border-gray-300 dark:border-white/10 p-4 space-y-2 max-h-[260px] overflow-y-auto bg-gray-100 dark:bg-transparent rounded-lg">
+        {/* DETAILS */}
+        <div className="
+          border border-[color:var(--foreground)/0.1]
+          p-4 space-y-2
+          max-h-[300px] overflow-y-auto
+          bg-[color:var(--foreground)/0.03]
+          rounded-xl
+        ">
 
           <div><b>Amount:</b> ₹{order?.final_amount}</div>
           <div><b>Platform Fee:</b> ₹{order?.platform_fee}</div>
@@ -238,12 +243,32 @@ export default function EscrowPage() {
           <div><b>Shipping:</b> {order?.shipping_status}</div>
 
           <div><b>Courier:</b> {order?.courier_name || "N/A"}</div>
-          <div><b>Tracking:</b> {order?.tracking_link || "N/A"}</div>
+
+          {order?.tracking_link ? (
+            <button
+              onClick={() => window.open(order.tracking_link, "_blank")}
+              className="
+                text-xs px-3 py-1 rounded-lg mt-1
+                bg-blue-500/20 text-blue-400
+                hover:bg-blue-500/30 transition
+              "
+            >
+              Track Package
+            </button>
+          ) : (
+            <div><b>Tracking:</b> N/A</div>
+          )}
 
           <div><b>Escrow Status:</b> {escrow?.escrow_status}</div>
         </div>
 
-        <div className="border border-gray-300 dark:border-white/10 p-4 flex flex-col justify-between bg-gray-100 dark:bg-transparent rounded-lg">
+        {/* DELIVERY */}
+        <div className="
+          border border-[color:var(--foreground)/0.1]
+          p-4 flex flex-col justify-between
+          bg-[color:var(--foreground)/0.03]
+          rounded-xl
+        ">
 
           <div>
             <div className="font-semibold mb-4">Delivery Progress</div>
@@ -254,11 +279,14 @@ export default function EscrowPage() {
               return (
                 <div key={step} className="flex items-center mb-3">
                   <div
-                    className={`w-4 h-4 rounded-full mr-3 ${
-                      isCompleted ? "bg-green-500" : "bg-gray-300"
-                    }`}
+                    className={`
+                      w-4 h-4 rounded-full mr-3
+                      ${isCompleted
+                        ? "bg-green-500"
+                        : "bg-gray-300 dark:bg-gray-700"}
+                    `}
                   />
-                  <div className={isCompleted ? "" : "text-gray-400"}>
+                  <div className={isCompleted ? "" : "opacity-50"}>
                     {formatStep(step)}
                   </div>
                 </div>
@@ -266,12 +294,19 @@ export default function EscrowPage() {
             })}
           </div>
 
-          <div className="mt-4 space-y-2 border-t pt-3 border-gray-300 dark:border-white/10">
+          <div className="
+            mt-4 space-y-2 border-t pt-3
+            border-[color:var(--foreground)/0.1]
+          ">
 
             {order?.shipping_status === "not_shipped" && (
               <button
                 onClick={markShipped}
-                className="bg-blue-500 text-white px-3 py-1 text-sm w-full rounded"
+                className="
+                  w-full py-2 rounded-lg text-sm
+                  bg-blue-500/90 hover:bg-blue-500
+                  text-white transition
+                "
               >
                 Mark as Shipped
               </button>
@@ -280,17 +315,20 @@ export default function EscrowPage() {
             {escrow?.escrow_status === "in_transit" && (
               <button
                 onClick={confirmDelivery}
-                className="bg-green-600 text-white px-3 py-1 text-sm w-full rounded"
+                className="
+                  w-full py-2 rounded-lg text-sm
+                  bg-green-500/90 hover:bg-green-500
+                  text-white transition
+                "
               >
                 Confirm Delivery
               </button>
             )}
-
           </div>
-
         </div>
       </div>
 
+      {/* CHAT */}
       {sessionUid && (
         <MessagePanel
           sessionId={sessionUid}
