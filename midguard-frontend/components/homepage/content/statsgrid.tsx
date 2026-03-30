@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api"; // ✅ adjust path if needed
+import { api } from "@/lib/api";
 
 export function StatsGrid() {
   const [stats, setStats] = useState({
@@ -21,13 +21,13 @@ export function StatsGrid() {
   };
 
   useEffect(() => {
-    fetchStats(); // initial load
+    fetchStats();
 
     const interval = setInterval(() => {
       fetchStats();
-    }, 4000); // ⏱ every 4 sec
+    }, 4000);
 
-    return () => clearInterval(interval); // cleanup
+    return () => clearInterval(interval);
   }, []);
 
   const items = [
@@ -38,16 +38,44 @@ export function StatsGrid() {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 w-[420px]">
+    <div
+      className="
+        grid gap-4
+        grid-cols-2 sm:grid-cols-2 md:grid-cols-4
+      "
+    >
       {items.map((item, i) => (
         <div
           key={i}
-          className="p-4 rounded-xl border border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-white/5"
+          className="
+            p-4 rounded-xl
+            border border-[color:var(--foreground)/0.12]
+            bg-[color:var(--foreground)/0.04]
+
+            hover:border-cyan-400
+            transition
+          "
         >
-          <p className="text-xs text-gray-500">{item.label}</p>
-          <h3 className="text-lg font-semibold">
+          {/* LABEL */}
+          <p className="text-xs text-[color:var(--foreground)/0.6]">
+            {item.label}
+          </p>
+
+          {/* VALUE */}
+          <h3
+            className="
+              text-xl font-semibold mt-1
+              text-[var(--foreground)]
+            "
+          >
             {item.value ?? 0}
           </h3>
+
+          {/* LIVE INDICATOR */}
+          <div className="flex items-center gap-2 mt-2 text-[color:var(--foreground)/0.5] text-xs">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            Live
+          </div>
         </div>
       ))}
     </div>
