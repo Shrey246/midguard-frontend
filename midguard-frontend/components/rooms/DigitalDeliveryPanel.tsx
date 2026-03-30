@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -17,39 +16,84 @@ export default function DigitalDeliveryPanel({
   instructions,
 }: Props) {
   const [revealed, setRevealed] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (!licenseKey) return;
+
+    await navigator.clipboard.writeText(licenseKey);
+    setCopied(true);
+
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   return (
-    <div className="bg-green-500/10 border border-green-500/30 
-      backdrop-blur-xl p-6 rounded-2xl shadow-lg space-y-5">
+    <div className="
+      bg-green-500/10
+      border border-green-500/30
+      backdrop-blur-xl
+      p-4 sm:p-5 md:p-6
+      rounded-2xl
+      shadow-sm
+      space-y-5
+    ">
 
       {/* SUCCESS */}
-      <h2 className="text-green-400 font-semibold text-lg">
+      <h2 className="text-green-500 font-semibold text-base sm:text-lg">
         ✔ Payment Successful
       </h2>
 
       {/* LICENSE KEY */}
       {licenseKey && (
         <div>
-          <p className="text-sm text-gray-400 mb-1">License Key</p>
+          <p className="text-xs sm:text-sm text-[color:var(--foreground)/0.6] mb-1">
+            License Key
+          </p>
 
-          <div className="flex items-center gap-3">
-            <div className="bg-black/40 px-4 py-2 rounded-lg font-mono">
+          <div className="
+            flex flex-col sm:flex-row
+            sm:items-center
+            gap-3
+          ">
+
+            <div className="
+              px-4 py-2 rounded-lg font-mono text-sm
+              bg-[color:var(--foreground)/0.08]
+              border border-[color:var(--foreground)/0.15]
+              break-all
+            ">
               {revealed ? licenseKey : "••••-••••-••••"}
             </div>
 
-            <button
-              onClick={() => setRevealed(true)}
-              className="text-sm bg-white/10 px-3 py-1 rounded-lg"
-            >
-              Reveal
-            </button>
+            <div className="flex gap-2">
+              {!revealed && (
+                <button
+                  onClick={() => setRevealed(true)}
+                  className="
+                    text-xs sm:text-sm
+                    bg-[color:var(--foreground)/0.08]
+                    hover:bg-[color:var(--foreground)/0.15]
+                    px-3 py-1.5 rounded-lg
+                    transition
+                  "
+                >
+                  Reveal
+                </button>
+              )}
 
-            <button
-              onClick={() => navigator.clipboard.writeText(licenseKey)}
-              className="text-sm bg-white/10 px-3 py-1 rounded-lg"
-            >
-              Copy
-            </button>
+              <button
+                onClick={handleCopy}
+                className="
+                  text-xs sm:text-sm
+                  bg-[color:var(--foreground)/0.08]
+                  hover:bg-[color:var(--foreground)/0.15]
+                  px-3 py-1.5 rounded-lg
+                  transition
+                "
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -59,7 +103,14 @@ export default function DigitalDeliveryPanel({
         <a
           href={downloadUrl}
           target="_blank"
-          className="inline-block bg-blue-500 hover:bg-blue-600 px-5 py-2 rounded-xl"
+          className="
+            inline-block
+            bg-blue-500 hover:bg-blue-600
+            text-white
+            px-5 py-2 rounded-xl
+            text-sm sm:text-base
+            transition
+          "
         >
           Download File
         </a>
@@ -70,7 +121,11 @@ export default function DigitalDeliveryPanel({
         <a
           href={accessUrl}
           target="_blank"
-          className="block text-blue-400 underline text-sm"
+          className="
+            block
+            text-blue-500 hover:underline
+            text-sm
+          "
         >
           Access Product
         </a>
@@ -78,7 +133,11 @@ export default function DigitalDeliveryPanel({
 
       {/* INSTRUCTIONS */}
       {instructions && (
-        <p className="text-sm text-gray-400">
+        <p className="
+          text-sm
+          text-[color:var(--foreground)/0.7]
+          leading-relaxed
+        ">
           {instructions}
         </p>
       )}
