@@ -89,7 +89,7 @@ export default function ListedOrdersPage() {
 
         {/* CTA */}
         <button
-          onClick={() => router.push("/dashboard/create-room")}
+          onClick={() => router.push("/dashboard/createroom")}
           className="
             mt-6 px-5 py-2 rounded-lg
             bg-cyan-500/90 hover:bg-cyan-500
