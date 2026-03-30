@@ -21,7 +21,13 @@ export default function FloatingActions() {
         {/* CREATE ROOM */}
         <button
           onClick={() => router.push("/dashboard/createroom")}
-          className="px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-lg hover:scale-105 transition"
+          className="
+            px-5 py-3 rounded-xl
+            bg-gradient-to-r from-cyan-400 to-blue-500
+            text-black font-semibold
+            shadow-lg hover:scale-105
+            transition
+          "
         >
           Create Room +
         </button>
@@ -29,7 +35,13 @@ export default function FloatingActions() {
         {/* JOIN ROOM */}
         <button
           onClick={() => setOpen(true)}
-          className="px-5 py-3 rounded-xl bg-red-500 text-white font-semibold shadow-lg hover:scale-105 transition"
+          className="
+            px-5 py-3 rounded-xl
+            bg-red-500
+            text-white font-semibold
+            shadow-lg hover:scale-105
+            transition
+          "
         >
           Join Room →
         </button>
@@ -41,17 +53,36 @@ export default function FloatingActions() {
 
           {/* BACKDROP */}
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="
+              absolute inset-0
+              bg-black/50 dark:bg-black/70
+              backdrop-blur-sm
+            "
             onClick={() => setOpen(false)}
           />
 
           {/* MODAL */}
-          <div className="relative z-[110] w-[400px] p-6 rounded-2xl bg-white dark:bg-black border border-gray-300 dark:border-white/10 shadow-xl">
+          <div
+            className="
+              relative z-[110]
+              w-[400px] p-6 rounded-2xl
+              bg-[var(--background)]
+              text-[var(--foreground)]
+              border border-[color:var(--foreground)/0.15]
+              shadow-xl
+              transition-colors duration-300
+            "
+          >
 
             {/* CLOSE */}
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 text-gray-500"
+              className="
+                absolute top-4 right-4
+                text-[color:var(--foreground)/0.6]
+                hover:text-[var(--foreground)]
+                transition
+              "
             >
               ✕
             </button>
@@ -61,18 +92,38 @@ export default function FloatingActions() {
             </h2>
 
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-sm text-gray-500">Room ID:</span>
+              <span className="text-sm text-[color:var(--foreground)/0.6]">
+                Room ID:
+              </span>
+
               <input
                 value={roomId}
                 onChange={(e) => setRoomId(e.target.value)}
                 placeholder="Enter Room ID"
-                className="flex-1 px-3 py-2 rounded-lg border bg-gray-100 dark:bg-white/5"
+                className="
+                  flex-1 px-3 py-2 rounded-lg
+                  bg-[color:var(--foreground)/0.05]
+                  text-[var(--foreground)]
+                  border border-[color:var(--foreground)/0.15]
+
+                  focus:outline-none
+                  focus:border-cyan-400
+                  focus:ring-1 focus:ring-cyan-400/40
+
+                  transition
+                "
               />
             </div>
 
             <button
               onClick={handleJoin}
-              className="w-full py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold"
+              className="
+                w-full py-2 rounded-lg
+                bg-gradient-to-r from-cyan-400 to-blue-500
+                text-black font-semibold
+                hover:scale-[1.02]
+                transition
+              "
             >
               JOIN
             </button>
