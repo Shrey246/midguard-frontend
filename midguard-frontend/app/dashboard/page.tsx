@@ -12,21 +12,8 @@ import FloatingActions from "@/components/homepage/content/floatingbuttons";
 
 export default function DashboardPage() {
 
-  // 🔥 MOCK DATA
-  const stats = { rooms: 12, transactions: 40, users: 25, escrow: 10 };
-
-  const products = [
-    { id: 1, name: "Product 1", price: "10,000" },
-    { id: 2, name: "Product 2", price: "12,000" },
-    { id: 3, name: "Product 3", price: "8,000" },
-    { id: 4, name: "Product 4", price: "15,000" },
-  ];
-
   return (
     <div className="flex">
-
-      {/* SIDEBAR */}
-      <Sidebar />
 
       {/* MAIN AREA */}
       <div className="flex-1 relative min-h-screen overflow-hidden">
