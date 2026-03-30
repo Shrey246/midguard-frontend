@@ -11,7 +11,6 @@ export default function AddressPage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    // 🔒 BLOCK ACCESS
     if (!token) {
       router.push("/login");
       return;
@@ -26,8 +25,6 @@ export default function AddressPage() {
       setAddresses(res.addresses || []);
     } catch (err) {
       console.error(err);
-
-      // 🔒 fallback → token expired / invalid
       localStorage.removeItem("token");
       router.push("/login");
     }
@@ -46,31 +43,41 @@ export default function AddressPage() {
   return (
     <div
       className="
-      p-4 sm:p-6 min-h-screen
-      bg-white text-black
-      dark:bg-black dark:text-white
-      transition-all duration-300
-    "
+        min-h-screen w-full
+        px-3 sm:px-4 md:px-6
+        py-4 sm:py-6
+        bg-[color:var(--background)]
+        text-[color:var(--foreground)]
+        transition-all duration-300
+      "
     >
-      <h1 className="text-xl sm:text-2xl font-bold mb-6">
+      <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-6">
         Saved Addresses
       </h1>
 
-      {/* RESPONSIVE GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      {/* GRID */}
+      <div className="
+        grid grid-cols-1 
+        sm:grid-cols-2 
+        lg:grid-cols-3 
+        gap-4 sm:gap-6
+      ">
 
         {/* ADD NEW CARD */}
         <div
           className="
-          border border-dashed border-gray-400 dark:border-gray-600
-          rounded-xl flex items-center justify-center
-          h-[150px] sm:h-[180px]
-          cursor-pointer
-          hover:border-cyan-500 transition
-        "
+            border border-dashed border-[color:var(--foreground)/0.3]
+            rounded-2xl
+            flex items-center justify-center
+            h-[140px] sm:h-[160px]
+            cursor-pointer
+            hover:border-cyan-500
+            hover:bg-[color:var(--foreground)/0.04]
+            transition-all duration-200
+          "
           onClick={() => router.push("/dashboard/Createaddress")}
         >
-          <span className="text-gray-500 dark:text-gray-400">
+          <span className="text-[color:var(--foreground)/0.6] text-sm sm:text-base">
             + Add Address
           </span>
         </div>
@@ -80,17 +87,20 @@ export default function AddressPage() {
           <div
             key={addr.address_uid}
             className={`
-              p-4 rounded-xl border transition
+              p-4 sm:p-5
+              rounded-2xl
+              border
+              transition-all duration-200
               ${
                 addr.is_default
-                  ? "border-cyan-500 bg-gray-100 dark:bg-white/5"
-                  : "border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-transparent"
+                  ? "border-cyan-500 bg-[color:var(--foreground)/0.05]"
+                  : "border-[color:var(--foreground)/0.12] bg-[color:var(--foreground)/0.03]"
               }
             `}
           >
             {/* HEADER */}
             <div className="flex justify-between items-start gap-2">
-              <h2 className="font-semibold text-sm sm:text-base">
+              <h2 className="font-semibold text-sm sm:text-base truncate">
                 {addr.full_name}
               </h2>
 
@@ -102,22 +112,26 @@ export default function AddressPage() {
             </div>
 
             {/* ADDRESS */}
-            <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">
+            <p className="text-sm mt-2 text-[color:var(--foreground)/0.7]">
               {addr.address_line1}, {addr.address_line2}
             </p>
 
-            <p className="text-sm text-gray-700 dark:text-gray-300">
+            <p className="text-sm text-[color:var(--foreground)/0.7]">
               {addr.city}, {addr.state} - {addr.postal_code}
             </p>
 
             <p className="text-sm mt-1">{addr.country}</p>
 
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[color:var(--foreground)/0.5] mt-1">
               Phone: {addr.phone_number}
             </p>
 
             {/* ACTIONS */}
-            <div className="flex flex-col sm:flex-row justify-between gap-2 mt-4 text-sm">
+            <div className="
+              flex flex-col sm:flex-row
+              justify-between gap-2
+              mt-4 text-sm
+            ">
 
               <button
                 onClick={() => handleDefault(addr.address_uid)}
