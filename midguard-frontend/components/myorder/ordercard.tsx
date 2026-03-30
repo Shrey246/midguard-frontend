@@ -1,13 +1,31 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 
 type Props = {
-  order: any; // already adapted OrderUI
+  order: any;
 };
 
 export default function OrderCard({ order }: Props) {
   const router = useRouter();
+  const [image, setImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const res = await api.getRoomAssets(order.roomId);
+        if (res?.data?.length > 0) {
+          setImage(res.data[0].url); // 👈 first image only
+        }
+      } catch (err) {
+        console.error("Image fetch failed", err);
+      }
+    };
+
+    fetchImage();
+  }, [order.roomId]);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -29,64 +47,113 @@ export default function OrderCard({ order }: Props) {
   };
 
   const handleClick = () => {
-    // 👉 navigate to escrow (core flow)
     router.push(`/dashboard/escrow/${order.sessionId}`);
   };
 
   return (
     <div
       onClick={handleClick}
-      className="w-full p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-400 transition cursor-pointer"
+      className="
+        group w-full p-4 rounded-2xl
+        bg-gradient-to-br from-white/5 to-white/0
+        border border-white/10
+        hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/10
+        transition-all duration-300 cursor-pointer
+      "
     >
-      {/* TOP */}
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-sm text-gray-400">
-          {order.role === "buyer" ? "Buying" : "Selling"}
-        </p>
-
-        <span
-          className={`text-xs px-3 py-1 rounded-full border ${getStatusStyle(
-            order.status
-          )}`}
-        >
-          {order.status.replace("_", " ").toUpperCase()}
-        </span>
-      </div>
-
-      {/* PRODUCT */}
-      <h2 className="text-lg font-semibold text-white">
-        {order.productName}
-      </h2>
-
-      {/* META */}
-      <div className="flex items-center justify-between mt-2">
-        <p className="text-sm text-gray-400">
-          {order.roomType.toUpperCase()}
-        </p>
-
-        <p className="text-lg font-bold text-cyan-400">
-          ₹{order.price}
-        </p>
-      </div>
-
-      {/* TRACKING */}
-      {order.trackingLink && (
-        <div className="mt-3">
-          <a
-            href={order.trackingLink}
-            target="_blank"
-            onClick={(e) => e.stopPropagation()}
-            className="text-xs text-blue-400 hover:underline"
-          >
-            Track Package →
-          </a>
+      <div className="flex gap-4">
+        
+        {/* IMAGE */}
+        <div className="w-24 h-24 rounded-xl overflow-hidden bg-white/10 flex-shrink-0">
+          {image ? (
+            <img
+              src={image}
+              alt="product"
+              className="w-full h-full object-cover group-hover:scale-105 transition"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
+              No Image
+            </div>
+          )}
         </div>
-      )}
 
-      {/* DATE */}
-      <p className="text-[10px] text-gray-500 mt-3">
-        {new Date(order.createdAt).toLocaleString()}
-      </p>
+        {/* RIGHT SIDE */}
+        <div className="flex-1">
+          
+          {/* TOP */}
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-400">
+              {order.role === "buyer" ? "Buying" : "Selling"}
+            </p>
+
+            <span
+              className={`text-[10px] px-2 py-1 rounded-full border ${getStatusStyle(
+                order.status
+              )}`}
+            >
+              {order.status.replace("_", " ").toUpperCase()}
+            </span>
+          </div>
+
+          {/* TITLE */}
+          <h2 className="text-lg font-semibold text-white mt-1 line-clamp-1">
+            {order.productName}
+          </h2>
+
+          {/* META */}
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-xs text-gray-400">
+              {order.roomType.toUpperCase()}
+            </p>
+
+            <p className="text-lg font-bold text-cyan-400">
+              ₹{order.price}
+            </p>
+          </div>
+
+          {/* ACTIONS */}
+          <div className="flex items-center gap-2 mt-3">
+            
+            {/* VIEW BUTTON */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClick();
+              }}
+              className="
+                text-xs px-3 py-1.5 rounded-lg
+                bg-cyan-500/20 text-cyan-300
+                hover:bg-cyan-500/30 transition
+              "
+            >
+              View Details
+            </button>
+
+            {/* TRACK BUTTON */}
+            {order.trackingLink && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(order.trackingLink, "_blank");
+                }}
+                className="
+                  text-xs px-3 py-1.5 rounded-lg
+                  bg-blue-500/20 text-blue-300
+                  hover:bg-blue-500/30 transition
+                "
+              >
+                Track
+              </button>
+            )}
+          </div>
+
+          {/* DATE */}
+          <p className="text-[10px] text-gray-500 mt-2">
+            {new Date(order.createdAt).toLocaleString()}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
