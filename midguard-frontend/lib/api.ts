@@ -475,4 +475,21 @@ setDefaultAddress: async (address_uid: string) => {
 
     return data.data;
   },
+
+  // GET ALL ROOMS (LIST)
+  getRooms: async () => {
+  const res = await fetch(`${BASE_URL}rooms`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to fetch rooms");
+  }
+
+  return data.data || [];
+  },
 };
