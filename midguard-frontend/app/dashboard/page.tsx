@@ -48,7 +48,7 @@ export default function DashboardPage() {
 
           <CategoryChips />
           <QuickActions />
-          <ProductsGrid products={products} />
+          <ProductsGrid />
           <Pagination />
           <FloatingActions />
           <Footer />
