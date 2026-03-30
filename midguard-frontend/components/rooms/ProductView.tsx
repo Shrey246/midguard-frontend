@@ -18,11 +18,13 @@ type Props = {
 export default function ProductView({ product }: Props) {
   return (
     <div className="
-      bg-gradient-to-br from-gray-100 to-white 
-      dark:from-white/5 dark:to-white/10
+      bg-[color:var(--foreground)/0.05]
+      border border-[color:var(--foreground)/0.12]
       backdrop-blur-xl
-      rounded-2xl p-4 sm:p-6 shadow-xl space-y-6
-      border border-gray-200 dark:border-white/10
+      rounded-2xl
+      p-4 sm:p-5 md:p-6
+      shadow-sm
+      space-y-6
       transition-all duration-300
     ">
 
@@ -32,13 +34,24 @@ export default function ProductView({ product }: Props) {
         {/* LEFT SIDE */}
         <div className="space-y-4">
 
-          <h1 className="text-lg sm:text-xl md:text-2xl font-semibold leading-snug">
+          <h1 className="
+            text-lg sm:text-xl md:text-2xl
+            font-semibold leading-snug
+            text-[color:var(--foreground)]
+          ">
             {product.name}
           </h1>
 
-          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+          <div className="
+            text-xs sm:text-sm
+            text-[color:var(--foreground)/0.6]
+          ">
             Seller:
-            <span className="ml-1 text-black dark:text-white font-medium">
+            <span className="
+              ml-1
+              text-[color:var(--foreground)]
+              font-medium
+            ">
               {product.sellerId}
             </span>
           </div>
@@ -46,7 +59,8 @@ export default function ProductView({ product }: Props) {
           {/* PRICE BLOCK */}
           <div className="
             inline-block
-            bg-orange-500/10 border border-orange-500/20
+            bg-orange-500/10
+            border border-orange-500/20
             px-4 py-2 rounded-xl
           ">
             <span className="text-2xl sm:text-3xl font-bold text-orange-500">
@@ -57,7 +71,10 @@ export default function ProductView({ product }: Props) {
         </div>
 
         {/* RIGHT SIDE (ATTRIBUTES) */}
-        <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+        <div className="
+          grid grid-cols-2 gap-3
+          text-xs sm:text-sm
+        ">
 
           {product.usedDuration && (
             <Card title="Used Duration" value={product.usedDuration} />
@@ -88,14 +105,21 @@ export default function ProductView({ product }: Props) {
 
       {/* DESCRIPTION */}
       <div className="
-        bg-gray-200 dark:bg-white/10
+        bg-[color:var(--foreground)/0.08]
         p-4 rounded-xl
-        border border-gray-300 dark:border-white/10
+        border border-[color:var(--foreground)/0.12]
       ">
-        <h2 className="text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
+        <h2 className="
+          text-sm font-semibold mb-2
+          text-[color:var(--foreground)/0.7]
+        ">
           Description
         </h2>
-        <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+
+        <p className="
+          text-[color:var(--foreground)/0.75]
+          text-sm leading-relaxed
+        ">
           {product.description}
         </p>
       </div>
@@ -104,23 +128,29 @@ export default function ProductView({ product }: Props) {
   );
 }
 
-/* 🔥 SMALL CARD COMPONENT (UI BOOST) */
+/* 🔥 CARD COMPONENT */
 function Card({ title, value, highlight }: any) {
   return (
     <div className="
-      bg-white dark:bg-white/10
-      border border-gray-200 dark:border-white/10
+      bg-[color:var(--foreground)/0.06]
+      border border-[color:var(--foreground)/0.12]
       p-3 rounded-xl
-      shadow-sm
       transition
     ">
-      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+      <p className="
+        text-[10px] sm:text-xs
+        text-[color:var(--foreground)/0.5]
+      ">
         {title}
       </p>
 
       <p className={`
         mt-1 font-medium
-        ${highlight ? "text-green-500" : "text-black dark:text-white"}
+        ${
+          highlight
+            ? "text-green-500"
+            : "text-[color:var(--foreground)]"
+        }
       `}>
         {value}
       </p>
