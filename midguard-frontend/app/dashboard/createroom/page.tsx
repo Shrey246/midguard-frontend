@@ -24,7 +24,6 @@ export default function CreateRoomPage() {
     auction_duration: "",
   });
 
-  // 🔐 TOKEN CHECK
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -79,7 +78,6 @@ export default function CreateRoomPage() {
     try {
       setLoading(true);
 
-      // 🔥 BASIC VALIDATION
       if (!form.product_name || !form.base_price) {
         alert("Product name and price are required");
         return;
@@ -90,13 +88,11 @@ export default function CreateRoomPage() {
         return;
       }
 
-      // 🔥 PREPARE PAYLOAD
       const payload: any = {
         ...form,
         base_price: Number(form.base_price),
       };
 
-      // 🔥 CLEANUP
       if (form.room_type !== "private") {
         delete payload.room_password;
       }
@@ -105,7 +101,6 @@ export default function CreateRoomPage() {
         delete payload.auction_duration;
       }
 
-      // 🔥 CREATE ROOM
       const res = await api.createRoom(payload);
 
       if (!res.success) {
@@ -114,7 +109,6 @@ export default function CreateRoomPage() {
 
       const roomUid = res.data.room_uid;
 
-      // 🔥 UPLOAD IMAGES (SAFE LOOP)
       for (const file of images) {
         try {
           const formData = new FormData();
@@ -130,7 +124,6 @@ export default function CreateRoomPage() {
         }
       }
 
-      // 🔥 REDIRECT
       router.push(`/dashboard/rooms/${roomUid}`);
 
     } catch (err: any) {
@@ -142,10 +135,22 @@ export default function CreateRoomPage() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center px-4 py-6 bg-gradient-to-b from-white to-gray-100 dark:from-black dark:to-[#0a0a0a]">
-      <div className="w-full max-w-4xl p-4 sm:p-6 rounded-2xl border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5">
+    <div className="
+      min-h-screen flex justify-center
+      px-3 sm:px-4 md:px-6 py-4 sm:py-6
+      bg-[color:var(--background)]
+      text-[color:var(--foreground)]
+      transition-all duration-300
+    ">
+      <div className="
+        w-full max-w-4xl
+        p-4 sm:p-5 md:p-6
+        rounded-2xl
+        border border-[color:var(--foreground)/0.12]
+        bg-[color:var(--foreground)/0.05]
+      ">
 
-        <h1 className="text-xl sm:text-2xl font-bold mb-6">
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-6">
           Create a New Room
         </h1>
 
@@ -157,14 +162,20 @@ export default function CreateRoomPage() {
             name="product_name"
             placeholder="Product Name"
             onChange={handleChange}
-            className="w-full mb-3 p-3 rounded-lg bg-gray-100 dark:bg-white/5"
+            className="w-full mb-3 p-3 rounded-lg
+              bg-[color:var(--foreground)/0.08]
+              border border-[color:var(--foreground)/0.15]
+              outline-none"
           />
 
           <textarea
             name="description"
             placeholder="Description"
             onChange={handleChange}
-            className="w-full p-3 rounded-lg bg-gray-100 dark:bg-white/5"
+            className="w-full p-3 rounded-lg
+              bg-[color:var(--foreground)/0.08]
+              border border-[color:var(--foreground)/0.15]
+              outline-none"
           />
         </section>
 
@@ -177,14 +188,18 @@ export default function CreateRoomPage() {
               name="used_duration"
               placeholder="Used Duration"
               onChange={handleChange}
-              className="p-3 rounded-lg bg-gray-100 dark:bg-white/5"
+              className="p-3 rounded-lg
+                bg-[color:var(--foreground)/0.08]
+                border border-[color:var(--foreground)/0.15]"
             />
 
             <input
               name="warranty_remaining"
               placeholder="Warranty Remaining"
               onChange={handleChange}
-              className="p-3 rounded-lg bg-gray-100 dark:bg-white/5"
+              className="p-3 rounded-lg
+                bg-[color:var(--foreground)/0.08]
+                border border-[color:var(--foreground)/0.15]"
             />
           </div>
 
@@ -193,13 +208,22 @@ export default function CreateRoomPage() {
               name="base_price"
               placeholder="Price"
               onChange={handleChange}
-              className="p-3 rounded-lg bg-gray-100 dark:bg-white/5"
+              className="p-3 rounded-lg
+                bg-[color:var(--foreground)/0.08]
+                border border-[color:var(--foreground)/0.15]"
             />
 
+            {/* ✅ FIXED SELECT */}
             <select
               name="room_type"
               onChange={handleChange}
-              className="p-3 rounded-lg bg-gray-100 dark:bg-white/5"
+              className="
+                p-3 rounded-lg
+                bg-[color:var(--background)]
+                text-[color:var(--foreground)]
+                border border-[color:var(--foreground)/0.15]
+                outline-none
+              "
             >
               <option value="public">Public</option>
               <option value="private">Private</option>
@@ -228,7 +252,9 @@ export default function CreateRoomPage() {
               name="room_password"
               placeholder="Set Room Password"
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-gray-100 dark:bg-white/5"
+              className="w-full p-3 rounded-lg
+                bg-[color:var(--foreground)/0.08]
+                border border-[color:var(--foreground)/0.15]"
             />
           </section>
         )}
@@ -241,7 +267,12 @@ export default function CreateRoomPage() {
             <select
               name="auction_duration"
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-gray-100 dark:bg-white/5"
+              className="
+                w-full p-3 rounded-lg
+                bg-[color:var(--background)]
+                text-[color:var(--foreground)]
+                border border-[color:var(--foreground)/0.15]
+              "
             >
               <option value="">Select Duration</option>
               <option value="1">1 Hour</option>
@@ -262,7 +293,7 @@ export default function CreateRoomPage() {
             className="mb-3"
           />
 
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-[color:var(--foreground)/0.6]">
             {form.room_type === "digital"
               ? "Only 1 image allowed"
               : "Max 5 images allowed"}
@@ -273,7 +304,12 @@ export default function CreateRoomPage() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold disabled:opacity-50"
+          className="
+            w-full py-3 rounded-xl
+            bg-gradient-to-r from-cyan-400 to-blue-500
+            text-black font-semibold
+            disabled:opacity-50
+          "
         >
           {loading ? "Creating..." : "Create Room"}
         </button>
