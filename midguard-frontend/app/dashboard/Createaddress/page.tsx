@@ -20,7 +20,6 @@ export default function CreateAddress() {
     is_default: false,
   });
 
-  // 🔒 AUTH GUARD
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -45,8 +44,6 @@ export default function CreateAddress() {
       router.push("/dashboard/address");
     } catch (err) {
       console.error(err);
-
-      // fallback (token expired etc.)
       localStorage.removeItem("token");
       router.push("/login");
     }
@@ -55,19 +52,27 @@ export default function CreateAddress() {
   return (
     <div
       className="
-      p-4 sm:p-6 min-h-screen
-      bg-white text-black
-      dark:bg-black dark:text-white
-      transition-all duration-300
-    "
+        min-h-screen w-full
+        px-3 sm:px-4 md:px-6
+        py-4 sm:py-6
+        bg-[color:var(--background)]
+        text-[color:var(--foreground)]
+        transition-all duration-300
+      "
     >
-      <div className="max-w-xl mx-auto">
+      <div className="max-w-xl w-full mx-auto">
 
-        <h1 className="text-xl sm:text-2xl font-bold mb-6">
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-6">
           Add New Address
         </h1>
 
-        <div className="space-y-4">
+        <div className="
+          space-y-4
+          bg-[color:var(--foreground)/0.05]
+          border border-[color:var(--foreground)/0.12]
+          p-4 sm:p-5 md:p-6
+          rounded-2xl
+        ">
 
           {/* LABEL */}
           <select
@@ -75,9 +80,10 @@ export default function CreateAddress() {
             onChange={handleChange}
             className="
               w-full p-2.5 rounded-lg
-              bg-gray-100 dark:bg-white/10
-              border border-gray-300 dark:border-white/10
+              bg-[color:var(--foreground)/0.08]
+              border border-[color:var(--foreground)/0.15]
               outline-none
+              text-sm sm:text-base
             "
           >
             <option value="home">Home</option>
@@ -95,11 +101,12 @@ export default function CreateAddress() {
           <Input name="state" placeholder="State" onChange={handleChange} />
 
           {/* CHECKBOX */}
-          <label className="flex gap-2 items-center text-sm">
+          <label className="flex gap-2 items-center text-sm text-[color:var(--foreground)/0.7]">
             <input
               type="checkbox"
               name="is_default"
               onChange={handleChange}
+              className="accent-cyan-500"
             />
             Make default
           </label>
@@ -111,7 +118,8 @@ export default function CreateAddress() {
               w-full py-2.5 rounded-lg
               bg-cyan-500 hover:bg-cyan-600
               text-white font-semibold
-              transition
+              transition-all duration-200
+              shadow-sm
             "
           >
             Add Address
@@ -132,11 +140,14 @@ function Input({ name, placeholder, onChange }: any) {
       onChange={onChange}
       className="
         w-full p-2.5 rounded-lg
-        bg-gray-100 dark:bg-white/10
-        border border-gray-300 dark:border-white/10
+        bg-[color:var(--foreground)/0.08]
+        border border-[color:var(--foreground)/0.15]
         outline-none
+        text-sm sm:text-base
+        placeholder:text-[color:var(--foreground)/0.5]
         focus:ring-2 focus:ring-cyan-500
-        transition
+        focus:border-transparent
+        transition-all duration-200
       "
     />
   );
