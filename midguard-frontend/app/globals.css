@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
+/* LIGHT MODE DEFAULT */
 :root {
   --background: #ffffff;
   --foreground: #000000;
 }
 
+/* DARK MODE */
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
