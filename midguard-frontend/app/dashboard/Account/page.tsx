@@ -20,7 +20,6 @@ export default function AccountPage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    // 🚫 Block access if no token
     if (!token) {
       router.push("/login");
       return;
@@ -37,7 +36,6 @@ export default function AccountPage() {
         },
       });
 
-      // 🚫 Invalid token → force logout
       if (!res.ok) {
         localStorage.removeItem("token");
         router.push("/login");
@@ -144,11 +142,16 @@ export default function AccountPage() {
   if (!user) return null;
 
   return (
-    <div className="p-4 sm:p-6 min-h-screen 
-      bg-white text-black 
-      dark:bg-black dark:text-white transition-all duration-300">
+    <div className="
+      min-h-screen w-full
+      px-3 sm:px-4 md:px-6
+      py-4 sm:py-6
+      bg-[color:var(--background)]
+      text-[color:var(--foreground)]
+      transition-all duration-300
+    ">
 
-      <h1 className="text-xl sm:text-2xl font-semibold mb-6">
+      <h1 className="text-lg sm:text-xl md:text-2xl font-semibold mb-6">
         Welcome back,{" "}
         <span className="text-purple-500">{user.fullName}</span>!
       </h1>
@@ -156,11 +159,18 @@ export default function AccountPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
         {/* PROFILE CARD */}
-        <div className="md:col-span-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-4 sm:p-6">
+        <div className="
+          md:col-span-2
+          bg-[color:var(--foreground)/0.05]
+          border border-[color:var(--foreground)/0.12]
+          rounded-2xl
+          p-4 sm:p-5 md:p-6
+        ">
 
           {/* HEADER */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 relative">
-            <div className="relative">
+
+            <div className="relative flex-shrink-0">
               {user.profilePicture ? (
                 <img
                   src={user.profilePicture}
@@ -174,17 +184,23 @@ export default function AccountPage() {
 
               <button
                 onClick={() => setShowPicMenu(!showPicMenu)}
-                className="absolute bottom-0 right-0 bg-purple-500 p-1 rounded-full text-xs text-white"
+                className="absolute bottom-0 right-0 bg-purple-500 p-1 rounded-full text-xs text-white shadow"
               >
                 📷
               </button>
 
               {showPicMenu && (
-                <div className="absolute top-20 left-0 bg-white dark:bg-black border border-gray-200 dark:border-white/10 p-3 rounded-lg z-50">
-                  <input type="file" onChange={handleUploadPic} />
+                <div className="
+                  absolute top-20 left-0
+                  w-44 sm:w-48
+                  bg-[color:var(--background)]
+                  border border-[color:var(--foreground)/0.15]
+                  p-3 rounded-lg z-50 shadow-lg
+                ">
+                  <input type="file" onChange={handleUploadPic} className="text-sm w-full" />
                   <button
                     onClick={removePic}
-                    className="block mt-2 text-red-500"
+                    className="block mt-2 text-red-500 text-sm"
                   >
                     Remove
                   </button>
@@ -192,18 +208,19 @@ export default function AccountPage() {
               )}
             </div>
 
-            <div>
-              <h2 className="text-lg font-semibold">{user.fullName}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-base sm:text-lg font-semibold truncate">{user.fullName}</h2>
+              <p className="text-xs sm:text-sm text-[color:var(--foreground)/0.6]">
                 {completion}% Complete
               </p>
             </div>
+
           </div>
 
           {/* PROGRESS */}
-          <div className="h-2 bg-gray-300 dark:bg-white/10 rounded-full mb-6">
+          <div className="h-2 bg-[color:var(--foreground)/0.1] rounded-full mb-6">
             <div
-              className="h-2 bg-green-400 rounded-full"
+              className="h-2 bg-green-400 rounded-full transition-all"
               style={{ width: `${completion}%` }}
             />
           </div>
@@ -221,7 +238,13 @@ export default function AccountPage() {
         </div>
 
         {/* ACTION CARD */}
-        <div className="bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-4 sm:p-6 space-y-3">
+        <div className="
+          bg-[color:var(--foreground)/0.05]
+          border border-[color:var(--foreground)/0.12]
+          rounded-2xl
+          p-4 sm:p-5 md:p-6
+          space-y-3
+        ">
 
           <ActionItem label="My Orders" icon={<ShoppingBag size={18} />} onClick={() => router.push("/dashboard/myorders")} />
           <ActionItem label="Saved Addresses" icon={<MapPin size={18} />} onClick={() => router.push("/dashboard/address")} />
@@ -230,7 +253,13 @@ export default function AccountPage() {
           <div className="pt-4">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 bg-red-500/10 border border-red-500 text-red-500 py-2.5 rounded-lg hover:bg-red-500 hover:text-white transition-all duration-200 font-medium"
+              className="
+                w-full flex items-center justify-center gap-2
+                bg-red-500/10 border border-red-500 text-red-500
+                py-2.5 rounded-lg
+                hover:bg-red-500 hover:text-white
+                transition-all duration-200 font-medium
+              "
             >
               <LogOut size={18} />
               Logout
@@ -259,18 +288,26 @@ function EditableRow({ label, field, value, onSave }: any) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 dark:border-white/10 pb-3">
-      <div className="flex-1">
-        <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
+    <div className="
+      flex flex-col sm:flex-row sm:items-center justify-between gap-2
+      border-b border-[color:var(--foreground)/0.1]
+      pb-3
+    ">
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-[color:var(--foreground)/0.6]">{label}</p>
 
         {editing ? (
           <input
             value={val}
             onChange={(e) => setVal(e.target.value)}
-            className="mt-1 p-2 w-full rounded bg-gray-200 dark:bg-white/10 outline-none"
+            className="
+              mt-1 p-2 w-full rounded
+              bg-[color:var(--foreground)/0.08]
+              outline-none text-sm
+            "
           />
         ) : (
-          <p className="font-medium">{value || "-"}</p>
+          <p className="font-medium truncate">{value || "-"}</p>
         )}
       </div>
 
@@ -291,14 +328,19 @@ function ActionItem({ label, icon, onClick }: any) {
   return (
     <div
       onClick={onClick}
-      className="flex items-center justify-between cursor-pointer hover:bg-gray-200 dark:hover:bg-white/5 px-3 py-2.5 rounded-lg transition-all duration-200"
+      className="
+        flex items-center justify-between cursor-pointer
+        hover:bg-[color:var(--foreground)/0.06]
+        px-3 py-2.5 rounded-lg
+        transition-all duration-200
+      "
     >
-      <div className="flex items-center gap-3">
-        <div className="text-gray-500 dark:text-gray-400">{icon}</div>
-        <span>{label}</span>
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="text-[color:var(--foreground)/0.6]">{icon}</div>
+        <span className="truncate">{label}</span>
       </div>
 
-      <span className="text-gray-500">{">"}</span>
+      <span className="text-[color:var(--foreground)/0.4]">{">"}</span>
     </div>
   );
 }
