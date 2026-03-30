@@ -25,6 +25,8 @@ export default function RoomPage() {
   const [loadingAction, setLoadingAction] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
 
+  const BASE_URL = "https://midguard-backend-production.up.railway.app/";
+
   const isAuction = (room?.type || "").toLowerCase() === "auction";
   const isActive = room?.status === "active";
   const isLocked = room?.status === "locked";
@@ -50,13 +52,13 @@ export default function RoomPage() {
     fetchRoom();
   }, [roomId]);
 
+  // =========================
+  // AUTH GUARD
+  // =========================
   useEffect(() => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    router.push("/login");
-  }
-  }, []);
+    const token = localStorage.getItem("token");
+    if (!token) router.push("/login");
+  }, [router]);
 
   // =========================
   // POLL BIDS
@@ -87,7 +89,7 @@ export default function RoomPage() {
   }, [room?.id, isAuction]);
 
   // =========================
-  // FETCH IMAGES
+  // FETCH IMAGES (FIXED SAFE)
   // =========================
   useEffect(() => {
     if (!room?.id) return;
@@ -102,10 +104,23 @@ export default function RoomPage() {
           [];
 
         const urls = assets
-          .filter((a: any) => a.purpose === "listing_image")
-          .map((a: any) => a.file_url);
+          .map((a: any) => {
+            const raw =
+              a?.url ||
+              a?.file_url ||
+              a?.path ||
+              a?.asset_url;
+
+            if (!raw) return null;
+
+            return raw.startsWith("http")
+              ? raw
+              : `${BASE_URL}${raw}`;
+          })
+          .filter(Boolean);
 
         setImages(urls);
+
       } catch (err) {
         console.error("❌ Failed to load images", err);
       }
@@ -142,7 +157,7 @@ export default function RoomPage() {
   }, []);
 
   // =========================
-  // Fetch Wishlist
+  // FETCH WISHLIST
   // =========================
   useEffect(() => {
     if (!room?.id) return;
@@ -160,27 +175,18 @@ export default function RoomPage() {
   }, [room?.id]);
 
   // =========================
-  // ACTION HANDLERS (UNCHANGED)
+  // ACTIONS (UNCHANGED)
   // =========================
   const handleBid = async (amount: number) => {
-    if (!isActive) {
-      alert("Auction not active");
-      return;
-    }
-
-    if (isEnded) {
-      alert("Auction already ended");
-      return;
-    }
+    if (!isActive) return alert("Auction not active");
+    if (isEnded) return alert("Auction already ended");
 
     try {
       const res = await api.placeBid(room.id, amount);
-
       const raw = res.data?.bid || res.data;
       const newBid = adaptBid(raw);
 
       if (!newBid) return;
-
       setBids((prev) => [newBid, ...prev]);
     } catch (err: any) {
       console.error("❌ Bid failed", err);
@@ -285,7 +291,17 @@ export default function RoomPage() {
 
   const actions = actionMap[room?.type] || [];
 
-  if (!room) return <div className="p-6">Loading...</div>;
+  if (!room) {
+    return (
+      <div className="
+        p-6 min-h-screen flex items-center justify-center
+        bg-[color:var(--background)]
+        text-[color:var(--foreground)/0.6]
+      ">
+        Loading room...
+      </div>
+    );
+  }
 
   return (
     <>
@@ -293,14 +309,15 @@ export default function RoomPage() {
       {!isActive && isAuction && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
           <div className="
-            bg-white dark:bg-black
-            p-4 sm:p-6 rounded-lg text-center
-            max-w-sm w-full
+            bg-[color:var(--background)]
+            text-[color:var(--foreground)]
+            p-4 sm:p-6 rounded-xl text-center
+            max-w-sm w-full border border-[color:var(--foreground)/0.1]
           ">
             <h2 className="text-lg sm:text-xl font-semibold mb-2">
               Auction Not Active
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+            <p className="text-sm text-[color:var(--foreground)/0.6]">
               This auction is not active yet or has ended.
             </p>
           </div>
@@ -309,12 +326,17 @@ export default function RoomPage() {
 
       <div className="
         p-4 sm:p-6 space-y-6
-        bg-white dark:bg-black
-        text-black dark:text-white
+        bg-[color:var(--background)]
+        text-[color:var(--foreground)]
         min-h-screen
+        transition-all
       ">
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="
+          grid grid-cols-1
+          lg:grid-cols-2
+          gap-4 sm:gap-6
+        ">
 
           <div className="space-y-6">
             <ImageView images={images} />
@@ -325,7 +347,7 @@ export default function RoomPage() {
             {isAuction && (
               <>
                 {isLocked && (
-                  <div className="text-green-600 font-semibold text-sm sm:text-base">
+                  <div className="text-green-500 font-semibold text-sm sm:text-base">
                     Auction closed. Waiting for winner confirmation.
                   </div>
                 )}
