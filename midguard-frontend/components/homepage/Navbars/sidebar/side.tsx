@@ -23,16 +23,19 @@ export default function Sidebar({ open, setOpen }: any) {
 
   // 🔥 INIT THEME
   useEffect(() => {
-    const saved = localStorage.getItem("theme");
+  const saved = localStorage.getItem("theme");
 
-    if (saved === "dark") {
-      setDark(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDark(false);
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  if (saved) {
+    const isDark = saved === "dark";
+    setDark(isDark);
+    document.documentElement.classList.toggle("dark", isDark);
+  } else {
+    // fallback to system
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setDark(prefersDark);
+    document.documentElement.classList.toggle("dark", prefersDark);
+  }
+}, []);
 
   // 🔥 LOGOUT HANDLER
   const handleLogout = async () => {
