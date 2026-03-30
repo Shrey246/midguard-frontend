@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
-// ✅ Type safety (prevents many runtime bugs)
 type WishlistItem = {
   room_uid: string;
   product_name: string;
@@ -29,6 +29,8 @@ export default function WishlistPage() {
     private: true,
     digital: true,
   });
+
+  const router = useRouter();
 
   useEffect(() => {
     fetchWishlist();
@@ -56,8 +58,6 @@ export default function WishlistPage() {
   const handleRemove = async (roomUid: string) => {
     try {
       await api.toggleWishlist(roomUid);
-
-      // ✅ optimistic UI update
       setWishlist((prev) =>
         prev.filter((item) => item.room_uid !== roomUid)
       );
@@ -66,7 +66,6 @@ export default function WishlistPage() {
     }
   };
 
-  // ✅ Safe grouping (prevents undefined issues)
   const grouped: Record<string, WishlistItem[]> = SECTION_TYPES.reduce(
     (acc, type) => {
       acc[type.key] = wishlist.filter(
@@ -78,60 +77,132 @@ export default function WishlistPage() {
   );
 
   if (loading) {
-    return <div className="p-6">Loading wishlist...</div>;
+    return (
+      <div className="p-6 text-[color:var(--foreground)/0.7]">
+        Loading wishlist...
+      </div>
+    );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">My Wishlist</h1>
+    <div className="
+      min-h-screen w-full
+      px-3 sm:px-4 md:px-6
+      py-4 sm:py-6
+      bg-[color:var(--background)]
+      text-[color:var(--foreground)]
+    ">
+      <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-6">
+        My Wishlist
+      </h1>
 
       {SECTION_TYPES.map((section) => {
         const items = grouped[section.key] || [];
 
         return (
-          <div key={section.key} className="border rounded-2xl shadow">
+          <div
+            key={section.key}
+            className="
+              border border-[color:var(--foreground)/0.12]
+              rounded-2xl
+              bg-[color:var(--foreground)/0.04]
+              overflow-hidden
+            "
+          >
             {/* HEADER */}
             <div
               onClick={() => toggleSection(section.key)}
-              className="cursor-pointer flex justify-between items-center p-4 bg-gray-100 rounded-2xl"
+              className="
+                cursor-pointer flex justify-between items-center
+                p-4
+                bg-[color:var(--foreground)/0.06]
+                hover:bg-[color:var(--foreground)/0.08]
+                transition
+              "
             >
-              <h2 className="text-lg font-semibold">{section.label}</h2>
-              <span>{openSections[section.key] ? "▲" : "▼"}</span>
+              <h2 className="text-base sm:text-lg font-semibold">
+                {section.label}
+              </h2>
+              <span className="text-[color:var(--foreground)/0.6]">
+                {openSections[section.key] ? "▲" : "▼"}
+              </span>
             </div>
 
             {/* CONTENT */}
             {openSections[section.key] && (
-              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="
+                p-4
+                grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+                gap-4
+              ">
                 {items.length === 0 ? (
-                  <p className="text-gray-500">No items</p>
+                  <p className="text-[color:var(--foreground)/0.5]">
+                    No items
+                  </p>
                 ) : (
                   items.map((item) => (
                     <div
                       key={item.room_uid}
-                      className="border rounded-xl p-4 shadow-sm hover:shadow-md transition"
+                      onClick={() =>
+                        router.push(`/dashboard/rooms/${item.room_uid}`)
+                      }
+                      className="
+                        border border-[color:var(--foreground)/0.12]
+                        rounded-xl
+                        p-4
+                        bg-[color:var(--foreground)/0.03]
+                        hover:bg-[color:var(--foreground)/0.06]
+                        hover:shadow-md
+                        transition-all duration-200
+                        cursor-pointer
+                        group
+                      "
                     >
-                      <h3 className="font-semibold text-lg">
+                      {/* NAME (FIXED BUG HERE) */}
+                      <h3 className="
+                        font-semibold text-base sm:text-lg
+                        text-[color:var(--foreground)]
+                        group-hover:text-purple-400
+                        transition
+                      ">
                         {item.product_name}
                       </h3>
 
-                      <p className="text-sm text-gray-500">
+                      <p className="
+                        text-sm
+                        text-[color:var(--foreground)/0.6]
+                        mt-1
+                      ">
                         ₹{Number(item.base_price).toLocaleString()}
                       </p>
 
-                      <p className="text-xs mt-1">
+                      <p className="
+                        text-xs mt-2
+                        text-[color:var(--foreground)/0.7]
+                      ">
                         Status: {item.listing_status}
                       </p>
 
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="
+                        text-xs mt-1
+                        text-[color:var(--foreground)/0.5]
+                      ">
                         Added:{" "}
                         {item.added_at
                           ? new Date(item.added_at).toLocaleString()
                           : "N/A"}
                       </p>
 
+                      {/* REMOVE BUTTON */}
                       <button
-                        onClick={() => handleRemove(item.room_uid)}
-                        className="mt-3 text-red-500 text-sm"
+                        onClick={(e) => {
+                          e.stopPropagation(); // 🔥 prevent navigation
+                          handleRemove(item.room_uid);
+                        }}
+                        className="
+                          mt-3 text-red-500 text-sm
+                          hover:underline
+                        "
                       >
                         Remove
                       </button>
