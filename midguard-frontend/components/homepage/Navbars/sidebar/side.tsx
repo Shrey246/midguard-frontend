@@ -21,6 +21,9 @@ export default function Sidebar({ open, setOpen }: any) {
   const pathname = usePathname();
   const [dark, setDark] = useState(false);
 
+  // ✅ USER STATE
+  const [user, setUser] = useState<any>(null);
+
   // THEME INIT
   useEffect(() => {
     const saved = localStorage.getItem("theme");
@@ -36,6 +39,18 @@ export default function Sidebar({ open, setOpen }: any) {
     }
   }, []);
 
+  // ✅ LOAD USER (SAFE)
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
+    } catch (err) {
+      console.error("Failed to parse user");
+    }
+  }, []);
+
   // LOGOUT
   const handleLogout = async () => {
     try {
@@ -48,6 +63,18 @@ export default function Sidebar({ open, setOpen }: any) {
     localStorage.removeItem("user");
 
     window.location.href = "/login";
+  };
+
+  // ✅ GET INITIALS
+  const getInitials = () => {
+    if (!user?.name) return "U";
+
+    return user.name
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
   };
 
   return (
@@ -78,17 +105,27 @@ export default function Sidebar({ open, setOpen }: any) {
           ✕
         </button>
 
-        {/* LOGO */}
+        {/* ✅ USER PROFILE (REPLACED LOGO) */}
+        {/* ✅ USER PROFILE (REPLACED LOGO) */}
         <div className="flex items-center gap-3 mb-8 px-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-black">
-            MG
-          </div>
-          <div>
-            <h1 className="font-semibold text-[var(--foreground)]">
-              MidGuard
+          {user?.avatar_url ? (
+            <img
+              src={user.avatar_url}
+              alt="profile"
+              className="w-10 h-10 rounded-full object-cover border border-[color:var(--foreground)/0.2]"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-black">
+              {getInitials()}
+            </div>
+          )}
+        
+          <div className="flex flex-col">
+            <h1 className="font-semibold text-[var(--foreground)] text-sm">
+              {user?.name || user?.username || "User"}
             </h1>
             <p className="text-xs text-[color:var(--foreground)/0.6]">
-              Marketplace
+              {user?.email || "email@example.com"}
             </p>
           </div>
         </div>
