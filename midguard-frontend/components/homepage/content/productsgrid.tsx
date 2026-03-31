@@ -13,18 +13,34 @@ export function ProductsGrid() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const data = await api.getRooms();
-        setRooms(data);
-      } catch (err) {
-        console.error("❌ Failed to fetch rooms:", err);
-      }
-    };
+  const fetchRooms = async () => {
+    try {
+      const rooms = await api.getRooms();
 
-    fetchRooms();
-  }, []);
+      // 🔥 Fetch assets for each room
+      const roomsWithAssets = await Promise.all(
+        rooms.map(async (room: any) => {
+          try {
+            const res = await api.getRoomAssets(room.room_uid);
 
+            return {
+              ...room,
+              assets: res.assets || [],
+            };
+          } catch {
+            return { ...room, assets: [] };
+          }
+        })
+      );
+
+      setRooms(roomsWithAssets);
+    } catch (err) {
+      console.error("❌ Failed to fetch rooms:", err);
+    }
+  };
+
+  fetchRooms();
+}, []);
   // Pagination logic
   const start = (page - 1) * ITEMS_PER_PAGE;
   const paginated = rooms.slice(start, start + ITEMS_PER_PAGE);
