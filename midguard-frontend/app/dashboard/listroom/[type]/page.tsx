@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { adaptRoom } from "@/lib/adapters/roomadapater";
 import ProductCard from "@/components/Product/Productcard";
+import { api } from "@/lib/api";
 
 export default function RoomsByTypePage() {
   const params = useParams();
@@ -30,7 +31,22 @@ export default function RoomsByTypePage() {
 
         const data = await res.json();
 
-        const adapted = (data.data || []).map(adaptRoom);
+        // ✅ NEW: fetch assets per room
+        const adapted = await Promise.all(
+          (data.data || []).map(async (room: any) => {
+            let assets: any[] = [];
+
+            try {
+              const assetsRes = await api.getRoomAssets(room.room_uid);
+              assets = assetsRes.assets || [];
+            } catch (err) {
+              console.error("❌ Failed to load assets for room:", room.room_uid);
+            }
+
+            return adaptRoom(room, assets);
+          })
+        );
+
         setRooms(adapted);
 
       } catch (err) {
