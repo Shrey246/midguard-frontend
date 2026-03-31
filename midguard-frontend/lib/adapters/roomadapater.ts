@@ -1,4 +1,4 @@
-export function adaptRoom(room: any) {
+export function adaptRoom(room: any, assets: any[] = []) {
   return {
     id: room.room_uid,
 
@@ -25,6 +25,10 @@ export function adaptRoom(room: any) {
       invoiceAvailable: room.invoice_available,
     },
 
-    images: [],
+    // ✅ FIXED: inject images from assets
+    images: assets
+      .filter((a) => a.is_active !== false)
+      .sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
+      .map((a) => a.file_url),
   };
 }
