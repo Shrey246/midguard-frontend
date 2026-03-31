@@ -31,8 +31,24 @@ export default function ListedOrdersPage() {
         throw new Error(res.message || "Failed to load orders");
       }
 
-      const adapted = (res.orders || []).map((o: any) =>
-        adaptOrder(o, "seller")
+      // ✅ NEW: fetch assets for each order
+      const adapted = await Promise.all(
+        (res.orders || []).map(async (o: any) => {
+          const roomId = o.room_uid || o.Room?.room_uid;
+
+          let assets: any[] = [];
+
+          if (roomId) {
+            try {
+              const assetsRes = await api.getRoomAssets(roomId);
+              assets = assetsRes.assets || [];
+            } catch (err) {
+              console.error("❌ Failed to load assets for room:", roomId);
+            }
+          }
+
+          return adaptOrder(o, assets, "seller");
+        })
       );
 
       setOrders(adapted);
