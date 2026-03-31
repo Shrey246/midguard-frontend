@@ -1,28 +1,10 @@
 export function ProductCard({ product }: any) {
-  // EMPTY CARD (AD SLOT)
   if (!product) {
     return (
-      <div
-        className="
-          p-4 rounded-xl
-          border-2 border-dashed
-          border-[color:var(--foreground)/0.15]
-          bg-[color:var(--foreground)/0.03]
-
-          flex flex-col items-center justify-center text-center
-          transition hover:border-cyan-400
-        "
-      >
-        <div
-          className="
-            h-32 w-full flex items-center justify-center
-            text-xs mb-3
-            text-[color:var(--foreground)/0.5]
-          "
-        >
+      <div className="p-4 rounded-xl border-2 border-dashed border-[color:var(--foreground)/0.15] bg-[color:var(--foreground)/0.03] flex flex-col items-center justify-center text-center transition hover:border-cyan-400">
+        <div className="h-32 w-full flex items-center justify-center text-xs mb-3 text-[color:var(--foreground)/0.5]">
           Your Product Here
         </div>
-
         <p className="text-xs text-[color:var(--foreground)/0.5]">
           Start selling on MidGuard
         </p>
@@ -30,69 +12,85 @@ export function ProductCard({ product }: any) {
     );
   }
 
-  // ✅ MOVE THIS OUTSIDE JSX
   const image =
     product?.assets?.find((a: any) => a.is_primary)?.file_url ||
     product?.assets?.[0]?.file_url;
 
-  // REAL PRODUCT
+  const price = product.price || product.base_price;
+  const original = product.original_price || price * 1.1; // fake strike price
+  const discount = Math.round(((original - price) / original) * 100);
+
   return (
     <div
       className="
-        p-4 rounded-xl
-        border border-[color:var(--foreground)/0.12]
-        bg-[color:var(--foreground)/0.04]
+        group p-3 rounded-2xl
+        bg-[#0b0f14]
+        border border-cyan-500/30
+        shadow-lg shadow-cyan-500/10
 
+        hover:shadow-cyan-500/30
         hover:border-cyan-400
-        hover:shadow-md
-        transition
+        transition-all duration-300
       "
     >
       {/* IMAGE */}
-      <div
-        className="
-          h-32 rounded-md mb-3 overflow-hidden
-          bg-[color:var(--foreground)/0.08]
-        "
-      >
+      <div className="relative rounded-xl overflow-hidden bg-white">
         {image ? (
           <img
             src={image}
             alt="product"
-            className="w-full h-full object-cover"
+            className="w-full h-40 object-cover group-hover:scale-105 transition"
           />
         ) : (
-          <div className="h-full flex items-center justify-center text-xs text-[color:var(--foreground)/0.5]">
+          <div className="h-40 flex items-center justify-center text-xs text-gray-400">
             No Image
+          </div>
+        )}
+
+        {/* DISCOUNT BADGE */}
+        {discount > 0 && (
+          <div className="absolute top-2 left-2 bg-green-500/90 text-black text-xs font-semibold px-2 py-1 rounded-md">
+            {discount}% OFF
           </div>
         )}
       </div>
 
-      {/* TITLE */}
-      <h4 className="text-sm font-semibold text-[var(--foreground)] line-clamp-1">
-        {product.title || product.name}
-      </h4>
+      {/* CONTENT */}
+      <div className="mt-3 space-y-2">
+        {/* TITLE */}
+        <h4 className="text-sm font-semibold text-white line-clamp-1">
+          {product.title || product.name}
+        </h4>
 
-      {/* PRICE */}
-      <p className="text-sm mt-1 text-[color:var(--foreground)/0.7]">
-        ₹{product.price || product.base_price}
-      </p>
+        {/* PRICE */}
+        <div className="flex items-center gap-2">
+          <span className="text-cyan-400 font-bold text-base">
+            ₹{price}
+          </span>
+          <span className="text-xs line-through text-gray-500">
+            ₹{original}
+          </span>
+        </div>
 
-      {/* CTA */}
-      <button
-        className="
-          mt-3 w-full py-1.5 rounded-lg text-sm font-medium
+        {/* TAG */}
+        <span className="text-[10px] px-2 py-1 rounded bg-white/10 text-gray-300 inline-block">
+          {product.visibility || "PUBLIC"}
+        </span>
 
-          border border-[color:var(--foreground)/0.15]
-          bg-[color:var(--foreground)/0.05]
-          text-[var(--foreground)]
+        {/* CTA */}
+        <button
+          className="
+            mt-2 w-full py-2 rounded-lg text-sm font-semibold
 
-          hover:bg-cyan-500 hover:text-black hover:border-cyan-500
-          transition
-        "
-      >
-        Buy Now
-      </button>
+            bg-cyan-500 text-black
+            hover:bg-cyan-400
+
+            transition
+          "
+        >
+          Buy Now
+        </button>
+      </div>
     </div>
   );
 }
