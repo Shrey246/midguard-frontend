@@ -11,41 +11,54 @@ const TOTAL_PAGES = 5;
 export function ProductsGrid() {
   const [rooms, setRooms] = useState<any[]>([]);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const fetchRooms = async () => {
-    try {
-      const rooms = await api.getRooms();
+    let isMounted = true; // ✅ prevent state update after unmount
 
-      // 🔥 Fetch assets for each room
-      const roomsWithAssets = await Promise.all(
-        rooms.map(async (room: any) => {
-          try {
-            const res = await api.getRoomAssets(room.room_uid);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-            return {
-              ...room,
-              assets: res.assets || [],
-            };
-          } catch {
-            return { ...room, assets: [] };
-          }
-        })
-      );
+        const roomsData = await api.getRooms();
 
-      setRooms(roomsWithAssets);
-    } catch (err) {
-      console.error("❌ Failed to fetch rooms:", err);
-    }
-  };
+        const roomsWithAssets = await Promise.all(
+          roomsData.map(async (room: any) => {
+            try {
+              const res = await api.getRoomAssets(room.room_uid);
 
-  fetchRooms();
-}, []);
-  // Pagination logic
+              return {
+                ...room,
+                assets: res.assets || [],
+              };
+            } catch (err) {
+              console.error("Asset fetch failed:", room.room_uid);
+              return { ...room, assets: [] };
+            }
+          })
+        );
+
+        if (isMounted) {
+          setRooms(roomsWithAssets);
+        }
+      } catch (err) {
+        console.error("❌ Failed to fetch rooms:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // cleanup
+    };
+  }, []);
+
+  // Pagination
   const start = (page - 1) * ITEMS_PER_PAGE;
   const paginated = rooms.slice(start, start + ITEMS_PER_PAGE);
 
-  // Fill empty slots
   const filledProducts = [...paginated];
   while (filledProducts.length < ITEMS_PER_PAGE) {
     filledProducts.push(null);
@@ -53,29 +66,33 @@ export function ProductsGrid() {
 
   return (
     <section className="mt-6">
-      {/* HEADER */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-[var(--foreground)]">
           Best Selling Products of the Week
         </h2>
       </div>
 
-      {/* GRID */}
-      <div
-        className="
-          grid gap-6
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-3
-          xl:grid-cols-4
-        "
-      >
-        {filledProducts.map((p, index) => (
-          <ProductCard key={index} product={p} />
-        ))}
-      </div>
+      {/* 🔄 Loading state */}
+      {loading ? (
+        <p className="text-sm text-[color:var(--foreground)/0.6]">
+          Loading products...
+        </p>
+      ) : (
+        <div
+          className="
+            grid gap-6
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-3
+            xl:grid-cols-4
+          "
+        >
+          {filledProducts.map((p, index) => (
+            <ProductCard key={index} product={p} />
+          ))}
+        </div>
+      )}
 
-      {/* PAGINATION */}
       <Pagination
         page={page}
         setPage={setPage}
