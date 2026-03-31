@@ -7,8 +7,6 @@ import MessagePanel from "@/components/rooms/MessagePanel";
 import { adaptMessage } from "@/lib/adapters/messageadapter";
 import ImageView from "@/components/rooms/ImageView";
 
-const BASE_URL = "https://midguard-backend-production.up.railway.app/";
-
 // ================= DELIVERY STEPS =================
 const DELIVERY_STEPS = [
   "funds_received",
@@ -75,7 +73,7 @@ export default function EscrowPage() {
     }
   };
 
-  // ================= FETCH IMAGES =================
+  // ================= FETCH IMAGES (FIXED ✅)
   useEffect(() => {
     if (!order?.room_uid) return;
 
@@ -89,19 +87,9 @@ export default function EscrowPage() {
           [];
 
         const urls = assets
-          .map((a: any) => {
-            const raw =
-              a?.url ||
-              a?.file_url ||
-              a?.path ||
-              a?.asset_url;
-
-            if (!raw) return null;
-
-            return raw.startsWith("http")
-              ? raw
-              : `${BASE_URL}${raw}`;
-          })
+          .filter((a: any) => a && a.is_active !== false)
+          .sort((a: any, b: any) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
+          .map((a: any) => a.file_url)
           .filter(Boolean);
 
         setImages(urls);
@@ -269,7 +257,6 @@ export default function EscrowPage() {
           bg-[color:var(--foreground)/0.03]
           rounded-xl
         ">
-
           <div>
             <div className="font-semibold mb-4">Delivery Progress</div>
 
@@ -298,7 +285,6 @@ export default function EscrowPage() {
             mt-4 space-y-2 border-t pt-3
             border-[color:var(--foreground)/0.1]
           ">
-
             {order?.shipping_status === "not_shipped" && (
               <button
                 onClick={markShipped}
