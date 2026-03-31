@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { Search, Wallet, User, Menu } from "lucide-react";
 import { api } from "@/lib/api";
 import NotificationBell from "@/components/dashboard/common/Notificationbell";
+import Image from "next/image"; // ✅ added
+import Link from "next/link";   // ✅ added
 
 export default function Topbar({ setOpen }: any) {
   const pathname = usePathname();
@@ -100,9 +102,22 @@ export default function Topbar({ setOpen }: any) {
           <Menu size={18} />
         </button>
 
-        <h1 className="text-base md:text-lg font-semibold">
-          {getTitle()}
-        </h1>
+        {/* ✅ REPLACED TITLE WITH LOGO */}
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <Image
+            src="/favicon.ico"
+            alt="MidGuard"
+            width={28}
+            height={28}
+            className="rounded"
+          />
+          <div className="flex flex-col leading-tight">
+            <span className="text-sm font-semibold">MidGuard</span>
+            <span className="text-xs text-[color:var(--foreground)/0.6]">
+              Marketplace
+            </span>
+          </div>
+        </Link>
       </div>
 
       {/* CENTER (SEARCH) */}
