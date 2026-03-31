@@ -44,16 +44,27 @@ export function ProductCard({ product }: any) {
       "
     >
       {/* IMAGE */}
+      const image =
+        product?.assets?.find((a: any) => a.is_primary)?.file_url ||
+        product?.assets?.[0]?.file_url;
+      
       <div
         className="
-          h-32 rounded-md mb-3
-          flex items-center justify-center text-xs
-
+          h-32 rounded-md mb-3 overflow-hidden
           bg-[color:var(--foreground)/0.08]
-          text-[color:var(--foreground)/0.5]
         "
       >
-        Image
+        {image ? (
+          <img
+            src={image}
+            alt="product"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="h-full flex items-center justify-center text-xs text-[color:var(--foreground)/0.5]">
+            No Image
+          </div>
+        )}
       </div>
 
       {/* TITLE */}
