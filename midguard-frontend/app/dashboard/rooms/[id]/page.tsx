@@ -25,8 +25,6 @@ export default function RoomPage() {
   const [loadingAction, setLoadingAction] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
 
-  const BASE_URL = "https://midguard-backend-production.up.railway.app/";
-
   const isAuction = (room?.type || "").toLowerCase() === "auction";
   const isActive = room?.status === "active";
   const isLocked = room?.status === "locked";
@@ -89,7 +87,7 @@ export default function RoomPage() {
   }, [room?.id, isAuction]);
 
   // =========================
-  // FETCH IMAGES (FIXED SAFE)
+  // FETCH IMAGES (FIXED ✅)
   // =========================
   useEffect(() => {
     if (!room?.id) return;
@@ -104,19 +102,9 @@ export default function RoomPage() {
           [];
 
         const urls = assets
-          .map((a: any) => {
-            const raw =
-              a?.url ||
-              a?.file_url ||
-              a?.path ||
-              a?.asset_url;
-
-            if (!raw) return null;
-
-            return raw.startsWith("http")
-              ? raw
-              : `${BASE_URL}${raw}`;
-          })
+          .filter((a: any) => a && a.is_active !== false)
+          .sort((a: any, b: any) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
+          .map((a: any) => a.file_url)
           .filter(Boolean);
 
         setImages(urls);
@@ -305,7 +293,6 @@ export default function RoomPage() {
 
   return (
     <>
-      {/* OVERLAY */}
       {!isActive && isAuction && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
           <div className="
