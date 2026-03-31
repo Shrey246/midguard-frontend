@@ -30,6 +30,11 @@ export function ProductCard({ product }: any) {
     );
   }
 
+  // ✅ MOVE THIS OUTSIDE JSX
+  const image =
+    product?.assets?.find((a: any) => a.is_primary)?.file_url ||
+    product?.assets?.[0]?.file_url;
+
   // REAL PRODUCT
   return (
     <div
@@ -44,10 +49,6 @@ export function ProductCard({ product }: any) {
       "
     >
       {/* IMAGE */}
-      const image =
-        product?.assets?.find((a: any) => a.is_primary)?.file_url ||
-        product?.assets?.[0]?.file_url;
-      
       <div
         className="
           h-32 rounded-md mb-3 overflow-hidden
