@@ -200,7 +200,7 @@ export default function RoomPage() {
       );
 
       if (res.success) {
-        router.push(`dashboard/escrow/${res.data.session_id}`);
+        router.push(`/dashboard/escrow/${res.data.session_id}`);
       } else {
         alert(res.error || "Order failed");
       }
@@ -230,7 +230,7 @@ export default function RoomPage() {
       );
 
       if (res.success) {
-        router.push(`dashboard/escrow/${res.data.session_id}`);
+        router.push(`/dashboard/escrow/${res.data.session_id}`);
       }
     } catch (err: any) {
       console.error("❌ Lock deal failed", err);
